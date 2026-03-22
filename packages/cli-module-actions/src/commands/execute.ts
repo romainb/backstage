@@ -21,24 +21,6 @@ import { schemaToFlags } from '../lib/schemaToFlags';
 import { resolveAuth } from '../lib/resolveAuth';
 
 export default async ({ args, info }: CliCommandContext) => {
-  if (args.includes('--help') || args.includes('-h')) {
-    cli(
-      {
-        help: info,
-        parameters: ['<action-id>'],
-        flags: {
-          instance: {
-            type: String,
-            description: 'Name of the instance to use',
-          },
-        },
-      },
-      undefined,
-      args,
-    );
-    return;
-  }
-
   const instanceIdx = args.indexOf('--instance');
   const instanceFlag = instanceIdx !== -1 ? args[instanceIdx + 1] : undefined;
 
@@ -60,9 +42,58 @@ export default async ({ args, info }: CliCommandContext) => {
     }
   }
 
-  if (!actionId) {
-    process.stderr.write('Usage: actions execute <action-id> [flags]\n');
-    process.exit(1);
+  const wantsHelp = args.includes('--help') || args.includes('-h');
+
+  if (wantsHelp && actionId) {
+    let actionSchemaFlags: Record<string, unknown> = {};
+    try {
+      const { accessToken, baseUrl } = await resolveAuth(instanceFlag);
+      const client = new ActionsClient(baseUrl, accessToken);
+      const actions = await client.listForPlugin(actionId);
+      const action = actions.find(a => a.id === actionId);
+      if (action) {
+        actionSchemaFlags = schemaToFlags(action.schema.input as any);
+      }
+    } catch {
+      process.stderr.write(
+        'Unable to retrieve action schema. Showing generic help.\n',
+      );
+    }
+
+    cli(
+      {
+        help: info,
+        parameters: ['<action-id>'],
+        flags: {
+          instance: {
+            type: String,
+            description: 'Name of the instance to use',
+          },
+          ...actionSchemaFlags,
+        },
+      },
+      undefined,
+      args,
+    );
+    return;
+  }
+
+  if (wantsHelp || !actionId) {
+    cli(
+      {
+        help: info,
+        parameters: ['<action-id>'],
+        flags: {
+          instance: {
+            type: String,
+            description: 'Name of the instance to use',
+          },
+        },
+      },
+      undefined,
+      wantsHelp ? args : ['--help', ...args],
+    );
+    return;
   }
 
   const { accessToken, baseUrl } = await resolveAuth(instanceFlag);
