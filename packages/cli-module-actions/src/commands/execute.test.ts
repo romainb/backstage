@@ -66,19 +66,24 @@ function authResponse() {
 
 describe('execute command', () => {
   let stderrSpy: jest.SpiedFunction<typeof process.stderr.write>;
+  let stdoutSpy: jest.SpiedFunction<typeof process.stdout.write>;
 
   beforeEach(() => {
     jest.clearAllMocks();
     stderrSpy = jest
       .spyOn(process.stderr, 'write')
       .mockImplementation(() => true);
+    stdoutSpy = jest
+      .spyOn(process.stdout, 'write')
+      .mockImplementation(() => true);
   });
 
   afterEach(() => {
     stderrSpy.mockRestore();
+    stdoutSpy.mockRestore();
   });
 
-  it('shows action-specific flags in help when action ID is provided', async () => {
+  it('shows action-specific help when action ID is provided', async () => {
     mockResolveAuth.mockResolvedValue(authResponse());
     mockListForPlugin.mockResolvedValue([testAction]);
 
@@ -90,17 +95,13 @@ describe('execute command', () => {
     expect(mockResolveAuth).toHaveBeenCalled();
     expect(mockListForPlugin).toHaveBeenCalledWith('catalog:refresh');
 
-    const cliCall = mockCli.mock.calls[0][0];
-    const cliFlags = cliCall.flags as Record<string, unknown>;
-    expect(cliFlags.entityRef).toEqual({
-      type: String,
-      description: 'Entity reference (required)',
-    });
-    expect(cliFlags.dryRun).toEqual({
-      type: Boolean,
-      description: 'Dry run mode',
-    });
-    expect(cliFlags.instance).toBeDefined();
+    const output = stdoutSpy.mock.calls.map(c => c[0]).join('');
+    expect(output).toContain('catalog:refresh');
+    expect(output).toContain('--entityRef');
+    expect(output).toContain('--dryRun');
+    expect(output).toContain('--instance');
+    expect(output).toContain('Usage:');
+    expect(mockCli).not.toHaveBeenCalled();
   });
 
   it('falls back to generic help with a message when auth fails', async () => {
@@ -174,6 +175,7 @@ describe('execute command', () => {
     });
 
     expect(mockResolveAuth).toHaveBeenCalledWith('staging');
+    expect(mockCli).not.toHaveBeenCalled();
   });
 
   it('executes action and prints output on success', async () => {
@@ -188,10 +190,6 @@ describe('execute command', () => {
       },
     });
 
-    const stdoutSpy = jest
-      .spyOn(process.stdout, 'write')
-      .mockImplementation(() => true);
-
     await executeCommand({
       ...baseContext,
       args: ['catalog:refresh', '--entityRef', 'component:default/foo'],
@@ -203,8 +201,6 @@ describe('execute command', () => {
     expect(stdoutSpy).toHaveBeenCalledWith(
       `${JSON.stringify({ refreshed: true }, null, 2)}\n`,
     );
-
-    stdoutSpy.mockRestore();
   });
 
   it('throws when action is not found during execution', async () => {

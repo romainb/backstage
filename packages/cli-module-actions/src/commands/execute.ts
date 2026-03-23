@@ -17,8 +17,9 @@
 import { cli } from 'cleye';
 import type { CliCommandContext } from '@backstage/cli-node';
 import { ActionsClient } from '../lib/ActionsClient';
-import { schemaToFlags } from '../lib/schemaToFlags';
+import { schemaToFlags, getComplexKeys } from '../lib/schemaToFlags';
 import { resolveAuth } from '../lib/resolveAuth';
+import { formatActionHelp } from '../lib/format';
 
 export default async ({ args, info }: CliCommandContext) => {
   const instanceIdx = args.indexOf('--instance');
@@ -45,14 +46,38 @@ export default async ({ args, info }: CliCommandContext) => {
   const wantsHelp = args.includes('--help') || args.includes('-h');
 
   if (wantsHelp && actionId) {
-    let actionSchemaFlags: Record<string, unknown> = {};
     try {
       const { accessToken, baseUrl } = await resolveAuth(instanceFlag);
       const client = new ActionsClient(baseUrl, accessToken);
       const actions = await client.listForPlugin(actionId);
       const action = actions.find(a => a.id === actionId);
       if (action) {
-        actionSchemaFlags = schemaToFlags(action.schema.input as any);
+        const flagDefs = schemaToFlags(action.schema.input as any);
+        const typeNames: Record<string, string> = {
+          String: 'string',
+          Number: 'number',
+          Boolean: 'boolean',
+        };
+        const flags = Object.entries(flagDefs).map(([name, def]) => ({
+          name,
+          type:
+            def.type === Boolean ? '' : typeNames[def.type.name] ?? 'string',
+          description: def.description,
+        }));
+        flags.push({
+          name: 'instance',
+          type: 'string',
+          description: 'Name of the instance to use',
+        });
+
+        process.stdout.write(
+          await formatActionHelp({
+            action,
+            usage: `${info.usage} ${actionId}`,
+            flags,
+          }),
+        );
+        return;
       }
     } catch {
       process.stderr.write(
@@ -65,7 +90,6 @@ export default async ({ args, info }: CliCommandContext) => {
         help: info,
         parameters: ['<action-id>'],
         flags: {
-          ...actionSchemaFlags,
           instance: {
             type: String,
             description: 'Name of the instance to use',
@@ -126,7 +150,9 @@ export default async ({ args, info }: CliCommandContext) => {
     );
   }
 
-  const schemaFlags = schemaToFlags(action.schema.input as any);
+  const inputSchema = action.schema.input as any;
+  const schemaFlags = schemaToFlags(inputSchema);
+  const complexKeys = getComplexKeys(inputSchema);
 
   const flagArgs = args.filter((_, i) => i !== actionIdIdx);
 
@@ -149,7 +175,15 @@ export default async ({ args, info }: CliCommandContext) => {
   const input: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(allFlags)) {
     if (key !== 'instance' && value !== undefined) {
-      input[key] = value;
+      if (complexKeys.has(key) && typeof value === 'string') {
+        try {
+          input[key] = JSON.parse(value);
+        } catch {
+          throw new Error(`Invalid JSON for --${key}. Expected a JSON string.`);
+        }
+      } else {
+        input[key] = value;
+      }
     }
   }
 

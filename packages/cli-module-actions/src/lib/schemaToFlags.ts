@@ -19,6 +19,8 @@ type JsonSchemaProperty = {
   description?: string;
   enum?: unknown[];
   default?: unknown;
+  anyOf?: unknown[];
+  oneOf?: unknown[];
 };
 
 type JsonSchemaObject = {
@@ -32,6 +34,34 @@ type CleyeFlag = {
   default?: unknown;
 };
 
+function isComplexType(prop: JsonSchemaProperty): boolean {
+  if (prop.anyOf || prop.oneOf) {
+    return true;
+  }
+  const rawType = Array.isArray(prop.type) ? prop.type[0] : prop.type;
+  return rawType === 'object' || rawType === 'array';
+}
+
+function resolveFlagType(
+  rawType: string | undefined,
+): StringConstructor | NumberConstructor | BooleanConstructor | undefined {
+  if (rawType === 'string') return String;
+  if (rawType === 'number' || rawType === 'integer') return Number;
+  if (rawType === 'boolean') return Boolean;
+  return undefined;
+}
+
+export function getComplexKeys(schema: JsonSchemaObject): Set<string> {
+  const keys = new Set<string>();
+  if (!schema.properties) return keys;
+  for (const [key, prop] of Object.entries(schema.properties)) {
+    if (isComplexType(prop)) {
+      keys.add(key);
+    }
+  }
+  return keys;
+}
+
 export function schemaToFlags(
   schema: JsonSchemaObject,
 ): Record<string, CleyeFlag> {
@@ -44,19 +74,22 @@ export function schemaToFlags(
 
   for (const [key, prop] of Object.entries(schema.properties)) {
     const rawType = Array.isArray(prop.type) ? prop.type[0] : prop.type;
+    let flagType = resolveFlagType(rawType);
 
-    let flagType: StringConstructor | NumberConstructor | BooleanConstructor;
-    if (rawType === 'string') {
+    if (!flagType && isComplexType(prop)) {
       flagType = String;
-    } else if (rawType === 'number' || rawType === 'integer') {
-      flagType = Number;
-    } else if (rawType === 'boolean') {
-      flagType = Boolean;
-    } else {
+    }
+
+    if (!flagType) {
       continue;
     }
 
     let desc = prop.description ?? '';
+
+    if (isComplexType(prop)) {
+      desc = desc ? `${desc} (JSON)` : '(JSON)';
+    }
+
     if (prop.enum?.length) {
       const values = prop.enum.map(v => String(v)).join(', ');
       desc = desc ? `${desc} [${values}]` : `[${values}]`;

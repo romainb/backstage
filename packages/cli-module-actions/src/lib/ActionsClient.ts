@@ -19,6 +19,7 @@ import { httpJson } from './httpJson';
 export type ActionDef = {
   id: string;
   name: string;
+  title?: string;
   description?: string;
   schema: {
     input: object;
@@ -51,6 +52,8 @@ function pluginActionsUrl(baseUrl: string, pluginId: string): string {
   ).toString();
 }
 
+export type GroupedActions = { pluginId: string; actions: ActionDef[] }[];
+
 export class ActionsClient {
   constructor(
     private readonly baseUrl: string,
@@ -58,7 +61,12 @@ export class ActionsClient {
   ) {}
 
   async list(pluginSources: string[]): Promise<ActionDef[]> {
-    const results: ActionDef[] = [];
+    const grouped = await this.listGrouped(pluginSources);
+    return grouped.flatMap(g => g.actions);
+  }
+
+  async listGrouped(pluginSources: string[]): Promise<GroupedActions> {
+    const results: GroupedActions = [];
 
     for (const pluginId of pluginSources) {
       const url = pluginActionsUrl(this.baseUrl, pluginId);
@@ -68,7 +76,7 @@ export class ActionsClient {
         signal: AbortSignal.timeout(30_000),
       });
 
-      results.push(...response.actions);
+      results.push({ pluginId, actions: response.actions });
     }
 
     return results;

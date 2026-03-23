@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { schemaToFlags } from './schemaToFlags';
+import { schemaToFlags, getComplexKeys } from './schemaToFlags';
 
 describe('schemaToFlags', () => {
   it('returns empty object when schema has no properties', () => {
@@ -59,16 +59,45 @@ describe('schemaToFlags', () => {
     });
   });
 
-  it('skips non-primitive properties like object and array', () => {
+  it('maps object and array properties to String flags with JSON hint', () => {
     const flags = schemaToFlags({
       properties: {
         name: { type: 'string' },
-        metadata: { type: 'object' },
+        metadata: { type: 'object', description: 'Entity metadata' },
         tags: { type: 'array' },
       },
     });
 
-    expect(Object.keys(flags)).toEqual(['name']);
+    expect(Object.keys(flags)).toEqual(['name', 'metadata', 'tags']);
+    expect(flags.metadata).toEqual({
+      type: String,
+      description: 'Entity metadata (JSON)',
+    });
+    expect(flags.tags).toEqual({ type: String, description: '(JSON)' });
+  });
+
+  it('maps anyOf and oneOf properties to String flags with JSON hint', () => {
+    const flags = schemaToFlags({
+      properties: {
+        orderFields: {
+          anyOf: [{}, {}],
+          description: 'Sort order',
+        },
+        filter: {
+          oneOf: [{}, {}],
+          description: 'Filter criteria',
+        },
+      },
+    });
+
+    expect(flags.orderFields).toEqual({
+      type: String,
+      description: 'Sort order (JSON)',
+    });
+    expect(flags.filter).toEqual({
+      type: String,
+      description: 'Filter criteria (JSON)',
+    });
   });
 
   it('skips properties with no type or composite types', () => {
@@ -148,6 +177,21 @@ describe('schemaToFlags', () => {
     });
 
     expect(flags.env.description).toBe('Target env [dev, prod] (required)');
+  });
+
+  it('getComplexKeys returns keys for object, array, anyOf, and oneOf types', () => {
+    const keys = getComplexKeys({
+      properties: {
+        name: { type: 'string' },
+        query: { type: 'object' },
+        fields: { type: 'array' },
+        order: { anyOf: [{}, {}] },
+        filter: { oneOf: [{}, {}] },
+        count: { type: 'number' },
+      },
+    });
+
+    expect(keys).toEqual(new Set(['query', 'fields', 'order', 'filter']));
   });
 
   it('preserves camelCase property names as flag keys', () => {
