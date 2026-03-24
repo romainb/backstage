@@ -17,24 +17,21 @@
 import chalk from 'chalk';
 import type { GroupedActions } from './ActionsClient';
 
-// eslint-disable-next-line no-control-regex
-const ansiEscapePattern =
-  /[\x1b\x9b][\[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><~]/g;
-
-let markedInstance: typeof import('marked') | undefined;
-
-async function getMarked() {
-  if (!markedInstance) {
-    markedInstance = await import('marked');
-    const { markedTerminal } = await import('marked-terminal');
-    markedInstance.marked.use(markedTerminal());
-  }
-  return markedInstance.marked;
+function stripAnsiEscapes(text: string): string {
+  const esc = String.fromCharCode(0x1b);
+  const csi = String.fromCharCode(0x9b);
+  const pattern = new RegExp(
+    `[${esc}${csi}][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><~]`,
+    'g',
+  );
+  return text.replace(pattern, '');
 }
 
 async function renderMarkdown(text: string): Promise<string> {
-  const sanitized = text.replace(ansiEscapePattern, '');
-  const marked = await getMarked();
+  const { marked } = await import('marked');
+  const { markedTerminal } = await import('marked-terminal');
+  marked.use(markedTerminal());
+  const sanitized = stripAnsiEscapes(text);
   return marked.parse(sanitized) as string;
 }
 
