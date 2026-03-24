@@ -93,7 +93,7 @@ export default async ({ args, info }: CliCommandContext) => {
         process.stdout.write(
           await formatActionHelp({
             action,
-            usage: `${info.usage} ${actionId}`,
+            usage: `${info.usage ?? 'backstage actions execute'} ${actionId}`,
             flags,
           }),
         );
