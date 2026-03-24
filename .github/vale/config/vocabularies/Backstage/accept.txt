@@ -568,6 +568,7 @@ Vodafone
 VPCs
 VSCode
 walkthroughs
+walkthrough
 Wayfair
 Weaveworks
 Webpack
