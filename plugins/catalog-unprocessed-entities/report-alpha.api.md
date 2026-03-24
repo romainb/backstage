@@ -25,42 +25,6 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'api:catalog-unprocessed-entities': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'nav-item:catalog-unprocessed-entities': OverridableExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef_2<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef_2<undefined>;
-      };
-    }>;
     'page:catalog-unprocessed-entities': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
@@ -136,6 +100,42 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef_2;
         noHeader?: boolean;
       };
+    }>;
+    'nav-item:catalog-unprocessed-entities': OverridableExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef_2<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef_2<undefined>;
+      };
+    }>;
+    'api:catalog-unprocessed-entities': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'sub-page:catalog-unprocessed-entities': OverridableExtensionDefinition<{
       kind: 'sub-page';

@@ -50,6 +50,27 @@ const appPlugin: OverridableFrontendPlugin<
       kind: undefined;
       name: undefined;
     }>;
+    'api:app/app-language': OverridableExtensionDefinition<{
+      config: {
+        defaultLanguage: string | undefined;
+        availableLanguages: string[] | undefined;
+      };
+      configInput: {
+        defaultLanguage?: string | undefined;
+        availableLanguages?: string[] | undefined;
+      };
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      kind: 'api';
+      name: 'app-language';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
     'app/layout': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
@@ -202,70 +223,6 @@ const appPlugin: OverridableFrontendPlugin<
       kind: undefined;
       name: 'routes';
     }>;
-    'api:app/alert': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'alert';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/analytics': OverridableExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {
-        implementations: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            AnalyticsImplementationFactory<{}>,
-            'core.analytics.factory',
-            {}
-          >,
-          {
-            singleton: false;
-            optional: false;
-            internal: false;
-          }
-        >;
-      };
-      kind: 'api';
-      name: 'analytics';
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/app-language': OverridableExtensionDefinition<{
-      config: {
-        defaultLanguage: string | undefined;
-        availableLanguages: string[] | undefined;
-      };
-      configInput: {
-        defaultLanguage?: string | undefined;
-        availableLanguages?: string[] | undefined;
-      };
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      kind: 'api';
-      name: 'app-language';
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
     'api:app/app-theme': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
@@ -290,43 +247,53 @@ const appPlugin: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/atlassian-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'atlassian-auth';
+    'theme:app/light': OverridableExtensionDefinition<{
+      kind: 'theme';
+      name: 'light';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      output: ExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
       inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
+      params: {
+        theme: AppTheme;
+      };
     }>;
-    'api:app/bitbucket-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'bitbucket-auth';
+    'theme:app/dark': OverridableExtensionDefinition<{
+      kind: 'theme';
+      name: 'dark';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      output: ExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
       inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
+      params: {
+        theme: AppTheme;
+      };
     }>;
-    'api:app/bitbucket-server-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'bitbucket-server-auth';
+    'api:app/swappable-components': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
+      inputs: {
+        components: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            {
+              ref: SwappableComponentRef;
+              loader:
+                | (() => (props: {}) => JSX.Element | null)
+                | (() => Promise<(props: {}) => JSX.Element | null>);
+            },
+            'core.swappableComponent',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: true;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'swappable-components';
       params: <
         TApi,
         TImpl extends TApi,
@@ -338,126 +305,6 @@ const appPlugin: OverridableFrontendPlugin<
     'api:app/components': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'components';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/dialog': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'dialog';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/discovery': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'discovery';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/error': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'error';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/feature-flags': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'feature-flags';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/fetch': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'fetch';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/github-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'github-auth';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/gitlab-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'gitlab-auth';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/google-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'google-auth';
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
@@ -500,244 +347,9 @@ const appPlugin: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/microsoft-auth': OverridableExtensionDefinition<{
+    'api:app/feature-flags': OverridableExtensionDefinition<{
       kind: 'api';
-      name: 'microsoft-auth';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/oauth-request': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'oauth-request';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/okta-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'okta-auth';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/onelogin-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'onelogin-auth';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/openshift-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'openshift-auth';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/permission': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'permission';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/plugin-header-actions': OverridableExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {
-        actions: ExtensionInput<
-          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
-          {
-            singleton: false;
-            optional: false;
-            internal: false;
-          }
-        >;
-      };
-      kind: 'api';
-      name: 'plugin-header-actions';
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/plugin-wrapper': OverridableExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {
-        wrappers: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            () => Promise<PluginWrapperDefinition>,
-            'core.plugin-wrapper.loader',
-            {}
-          >,
-          {
-            singleton: false;
-            optional: false;
-            internal: false;
-          }
-        >;
-      };
-      kind: 'api';
-      name: 'plugin-wrapper';
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/scm-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'scm-auth';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/scm-integrations': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'scm-integrations';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/storage': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'storage';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/swappable-components': OverridableExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {
-        components: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            {
-              ref: SwappableComponentRef;
-              loader:
-                | (() => (props: {}) => JSX.Element | null)
-                | (() => Promise<(props: {}) => JSX.Element | null>);
-            },
-            'core.swappableComponent',
-            {}
-          >,
-          {
-            singleton: false;
-            optional: false;
-            internal: true;
-          }
-        >;
-      };
-      kind: 'api';
-      name: 'swappable-components';
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/toast': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'toast';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'api:app/toast-forwarder': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'toast-forwarder';
+      name: 'feature-flags';
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
@@ -785,20 +397,42 @@ const appPlugin: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/vmware-cloud-auth': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'vmware-cloud-auth';
+    'sign-in-page:app': OverridableExtensionDefinition<{
+      kind: 'sign-in-page';
+      name: undefined;
       config: {};
       configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      output: ExtensionDataRef<
+        ComponentType<SignInPageProps>,
+        'core.sign-in-page.component',
+        {}
+      >;
       inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
+      params: {
+        loader: () => Promise<ComponentType<SignInPageProps>>;
+      };
+    }>;
+    'app-root-element:app/dialog-display': OverridableExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      kind: 'app-root-element';
+      name: 'dialog-display';
+      params: {
+        element: JSX.Element;
+      };
+    }>;
+    'app-root-element:app/oauth-request-dialog': OverridableExtensionDefinition<{
+      kind: 'app-root-element';
+      name: 'oauth-request-dialog';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        element: JSX.Element;
+      };
     }>;
     'app-root-element:app/alert-display': OverridableExtensionDefinition<{
       config: {
@@ -825,31 +459,9 @@ const appPlugin: OverridableFrontendPlugin<
         element: JSX.Element;
       };
     }>;
-    'app-root-element:app/dialog-display': OverridableExtensionDefinition<{
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {};
-      kind: 'app-root-element';
-      name: 'dialog-display';
-      params: {
-        element: JSX.Element;
-      };
-    }>;
-    'app-root-element:app/oauth-request-dialog': OverridableExtensionDefinition<{
-      kind: 'app-root-element';
-      name: 'oauth-request-dialog';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {};
-      params: {
-        element: JSX.Element;
-      };
-    }>;
-    'component:app/core-error-display': OverridableExtensionDefinition<{
+    'component:app/core-progress': OverridableExtensionDefinition<{
       kind: 'component';
-      name: 'core-error-display';
+      name: 'core-progress';
       config: {};
       configInput: {};
       output: ExtensionDataRef<
@@ -959,6 +571,62 @@ const appPlugin: OverridableFrontendPlugin<
           : never;
       }>;
     }>;
+    'component:app/core-error-display': OverridableExtensionDefinition<{
+      kind: 'component';
+      name: 'core-error-display';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          ref: SwappableComponentRef;
+          loader:
+            | (() => (props: {}) => JSX.Element | null)
+            | (() => Promise<(props: {}) => JSX.Element | null>);
+        },
+        'core.swappableComponent',
+        {}
+      >;
+      inputs: {};
+      params: <Ref extends SwappableComponentRef<any>>(params: {
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }) => ExtensionBlueprintParams<{
+        component: Ref extends SwappableComponentRef<
+          any,
+          infer IExternalComponentProps
+        >
+          ? {
+              ref: Ref;
+            } & ((props: IExternalComponentProps) => JSX.Element | null)
+          : never;
+        loader: Ref extends SwappableComponentRef<
+          infer IInnerComponentProps,
+          any
+        >
+          ?
+              | (() => (props: IInnerComponentProps) => JSX.Element | null)
+              | (() => Promise<
+                  (props: IInnerComponentProps) => JSX.Element | null
+                >)
+          : never;
+      }>;
+    }>;
     'component:app/core-page-layout': OverridableExtensionDefinition<{
       kind: 'component';
       name: 'core-page-layout';
@@ -1015,98 +683,430 @@ const appPlugin: OverridableFrontendPlugin<
           : never;
       }>;
     }>;
-    'component:app/core-progress': OverridableExtensionDefinition<{
-      kind: 'component';
-      name: 'core-progress';
+    'api:app/plugin-wrapper': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ExtensionDataRef<
-        {
-          ref: SwappableComponentRef;
-          loader:
-            | (() => (props: {}) => JSX.Element | null)
-            | (() => Promise<(props: {}) => JSX.Element | null>);
-        },
-        'core.swappableComponent',
-        {}
-      >;
-      inputs: {};
-      params: <Ref extends SwappableComponentRef<any>>(params: {
-        component: Ref extends SwappableComponentRef<
-          any,
-          infer IExternalComponentProps
-        >
-          ? {
-              ref: Ref;
-            } & ((props: IExternalComponentProps) => JSX.Element | null)
-          : never;
-        loader: Ref extends SwappableComponentRef<
-          infer IInnerComponentProps,
-          any
-        >
-          ?
-              | (() => (props: IInnerComponentProps) => JSX.Element | null)
-              | (() => Promise<
-                  (props: IInnerComponentProps) => JSX.Element | null
-                >)
-          : never;
-      }) => ExtensionBlueprintParams<{
-        component: Ref extends SwappableComponentRef<
-          any,
-          infer IExternalComponentProps
-        >
-          ? {
-              ref: Ref;
-            } & ((props: IExternalComponentProps) => JSX.Element | null)
-          : never;
-        loader: Ref extends SwappableComponentRef<
-          infer IInnerComponentProps,
-          any
-        >
-          ?
-              | (() => (props: IInnerComponentProps) => JSX.Element | null)
-              | (() => Promise<
-                  (props: IInnerComponentProps) => JSX.Element | null
-                >)
-          : never;
-      }>;
-    }>;
-    'sign-in-page:app': OverridableExtensionDefinition<{
-      kind: 'sign-in-page';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        ComponentType<SignInPageProps>,
-        'core.sign-in-page.component',
-        {}
-      >;
-      inputs: {};
-      params: {
-        loader: () => Promise<ComponentType<SignInPageProps>>;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        wrappers: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            () => Promise<PluginWrapperDefinition>,
+            'core.plugin-wrapper.loader',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
       };
+      kind: 'api';
+      name: 'plugin-wrapper';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'theme:app/dark': OverridableExtensionDefinition<{
-      kind: 'theme';
-      name: 'dark';
+    'api:app/plugin-header-actions': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
-      inputs: {};
-      params: {
-        theme: AppTheme;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        actions: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
       };
+      kind: 'api';
+      name: 'plugin-header-actions';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'theme:app/light': OverridableExtensionDefinition<{
-      kind: 'theme';
-      name: 'light';
+    'api:app/analytics': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
-      output: ExtensionDataRef<AppTheme, 'core.theme.theme', {}>;
-      inputs: {};
-      params: {
-        theme: AppTheme;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        implementations: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            AnalyticsImplementationFactory<{}>,
+            'core.analytics.factory',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
       };
+      kind: 'api';
+      name: 'analytics';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/dialog': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'dialog';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/discovery': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'discovery';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/alert': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'alert';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/toast-forwarder': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'toast-forwarder';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/toast': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'toast';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/error': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'error';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/storage': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'storage';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/fetch': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'fetch';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/oauth-request': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'oauth-request';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/google-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'google-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/microsoft-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'microsoft-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/github-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'github-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/okta-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'okta-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/gitlab-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'gitlab-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/onelogin-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'onelogin-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/bitbucket-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'bitbucket-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/bitbucket-server-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'bitbucket-server-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/atlassian-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'atlassian-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/vmware-cloud-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'vmware-cloud-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/openshift-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'openshift-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/permission': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'permission';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/scm-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'scm-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/scm-integrations': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'scm-integrations';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
   }
 >;

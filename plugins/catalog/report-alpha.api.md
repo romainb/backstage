@@ -46,8 +46,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
     readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
     readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
-    readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.unknown': 'unknown';
+    readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
     readonly 'aboutCard.editButtonTitle': 'Edit Metadata';
     readonly 'aboutCard.editButtonAriaLabel': 'Edit';
@@ -160,24 +160,30 @@ const _default: OverridableFrontendPlugin<
     unregisterRedirect: ExternalRouteRef<undefined, true>;
   },
   {
-    'api:catalog': OverridableExtensionDefinition<{
-      kind: 'api';
+    'nav-item:catalog': OverridableExtensionDefinition<{
+      kind: 'nav-item';
       name: undefined;
       config: {};
       configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      output: ExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef_2<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
       inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef_2<undefined>;
+      };
     }>;
-    'api:catalog/entity-presentation': OverridableExtensionDefinition<{
+    'api:catalog': OverridableExtensionDefinition<{
       kind: 'api';
-      name: 'entity-presentation';
+      name: undefined;
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
@@ -205,791 +211,20 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'catalog-filter:catalog/kind': OverridableExtensionDefinition<{
-      config: {
-        initialFilter: string;
-      };
-      configInput: {
-        initialFilter?: string | undefined;
-      };
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {};
-      kind: 'catalog-filter';
-      name: 'kind';
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/lifecycle': OverridableExtensionDefinition<{
-      kind: 'catalog-filter';
-      name: 'lifecycle';
+    'api:catalog/entity-presentation': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'entity-presentation';
       config: {};
       configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/list': OverridableExtensionDefinition<{
-      config: {
-        initialFilter: 'all' | 'owned' | 'starred';
-      };
-      configInput: {
-        initialFilter?: 'all' | 'owned' | 'starred' | undefined;
-      };
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {};
-      kind: 'catalog-filter';
-      name: 'list';
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/mode': OverridableExtensionDefinition<{
-      config: {
-        mode: 'all' | 'owners-only' | undefined;
-      };
-      configInput: {
-        mode?: 'all' | 'owners-only' | undefined;
-      };
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {};
-      kind: 'catalog-filter';
-      name: 'mode';
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/namespace': OverridableExtensionDefinition<{
-      kind: 'catalog-filter';
-      name: 'namespace';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/processing-status': OverridableExtensionDefinition<{
-      kind: 'catalog-filter';
-      name: 'processing-status';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/tag': OverridableExtensionDefinition<{
-      kind: 'catalog-filter';
-      name: 'tag';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'catalog-filter:catalog/type': OverridableExtensionDefinition<{
-      kind: 'catalog-filter';
-      name: 'type';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-      };
-    }>;
-    'entity-card:catalog/about': OverridableExtensionDefinition<{
-      config: {
-        filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {
-        iconLinks: ExtensionInput<
-          | ConfigurableExtensionDataRef<
-              (entity: Entity) => boolean,
-              'catalog.entity-filter-function',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'catalog.entity-filter-expression',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              () => IconLinkVerticalProps,
-              'entity-icon-link-props',
-              {}
-            >,
-          {
-            singleton: false;
-            optional: false;
-            internal: false;
-          }
-        >;
-      };
-      kind: 'entity-card';
-      name: 'about';
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:catalog/depends-on-components': OverridableExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'depends-on-components';
-      config: {
-        filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:catalog/depends-on-resources': OverridableExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'depends-on-resources';
-      config: {
-        filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:catalog/has-components': OverridableExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'has-components';
-      config: {
-        filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:catalog/has-resources': OverridableExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'has-resources';
-      config: {
-        filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:catalog/has-subcomponents': OverridableExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'has-subcomponents';
-      config: {
-        filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:catalog/has-subdomains': OverridableExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'has-subdomains';
-      config: {
-        filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:catalog/has-systems': OverridableExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'has-systems';
-      config: {
-        filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:catalog/labels': OverridableExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'labels';
-      config: {
-        filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:catalog/links': OverridableExtensionDefinition<{
-      kind: 'entity-card';
-      name: 'links';
-      config: {
-        filter: FilterPredicate | undefined;
-        type: 'content' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        type?: 'content' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-content:catalog/overview': OverridableExtensionDefinition<{
-      config: {
-        path: string | undefined;
-        title: string | undefined;
-        filter: FilterPredicate | undefined;
-        group: string | false | undefined;
-        icon: string | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        title?: string | undefined;
-        path?: string | undefined;
-        group?: string | false | undefined;
-        icon?: string | undefined;
-      };
-      output:
-        | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<string, 'catalog.entity-content-title', {}>
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-content-group',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string | ReactElement<any, string | JSXElementConstructor<any>>,
-            'catalog.entity-content-icon',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {
-        layouts: ExtensionInput<
-          | ConfigurableExtensionDataRef<
-              (entity: Entity) => boolean,
-              'catalog.entity-filter-function',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'catalog.entity-filter-expression',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              (props: EntityContentLayoutProps) => React.JSX.Element,
-              'catalog.entity-content-layout.component',
-              {}
-            >,
-          {
-            singleton: false;
-            optional: false;
-            internal: false;
-          }
-        >;
-        cards: ExtensionInput<
-          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-          | ConfigurableExtensionDataRef<
-              (entity: Entity) => boolean,
-              'catalog.entity-filter-function',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              string,
-              'catalog.entity-filter-expression',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              EntityCardType,
-              'catalog.entity-card-type',
-              {
-                optional: true;
-              }
-            >,
-          {
-            singleton: false;
-            optional: false;
-            internal: false;
-          }
-        >;
-      };
-      kind: 'entity-content';
-      name: 'overview';
-      params: {
-        defaultPath?: [Error: `Use the 'path' param instead`];
-        path: string;
-        defaultTitle?: [Error: `Use the 'title' param instead`];
-        title: string;
-        defaultGroup?: [Error: `Use the 'group' param instead`];
-        group?: keyof defaultEntityContentGroups | (string & {});
-        icon?: string | ReactElement;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef_2;
-        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
-      };
-    }>;
-    'entity-context-menu-item:catalog/copy-entity-url': OverridableExtensionDefinition<{
-      kind: 'entity-context-menu-item';
-      name: 'copy-entity-url';
-      config: {
-        filter: FilterPredicate | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: EntityContextMenuItemParams;
-    }>;
-    'entity-context-menu-item:catalog/inspect-entity': OverridableExtensionDefinition<{
-      kind: 'entity-context-menu-item';
-      name: 'inspect-entity';
-      config: {
-        filter: FilterPredicate | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: EntityContextMenuItemParams;
-    }>;
-    'entity-context-menu-item:catalog/unregister-entity': OverridableExtensionDefinition<{
-      kind: 'entity-context-menu-item';
-      name: 'unregister-entity';
-      config: {
-        filter: FilterPredicate | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: EntityContextMenuItemParams;
-    }>;
-    'entity-icon-link:catalog/view-source': OverridableExtensionDefinition<{
-      kind: 'entity-icon-link';
-      name: 'view-source';
-      config: {
-        label: string | undefined;
-        title: string | undefined;
-        filter: FilterPredicate | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        label?: string | undefined;
-        title?: string | undefined;
-      };
-      output:
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            () => IconLinkVerticalProps,
-            'entity-icon-link-props',
-            {}
-          >;
-      inputs: {};
-      params: {
-        useProps: () => Omit<IconLinkVerticalProps, 'color'>;
-        filter?: FilterPredicate | ((entity: Entity) => boolean);
-      };
-    }>;
-    'nav-item:catalog': OverridableExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef_2<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef_2<undefined>;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'page:catalog': OverridableExtensionDefinition<{
       config: {
@@ -1277,6 +512,708 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
+    'catalog-filter:catalog/tag': OverridableExtensionDefinition<{
+      kind: 'catalog-filter';
+      name: 'tag';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/kind': OverridableExtensionDefinition<{
+      config: {
+        initialFilter: string;
+      };
+      configInput: {
+        initialFilter?: string | undefined;
+      };
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      kind: 'catalog-filter';
+      name: 'kind';
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/type': OverridableExtensionDefinition<{
+      kind: 'catalog-filter';
+      name: 'type';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/mode': OverridableExtensionDefinition<{
+      config: {
+        mode: 'all' | 'owners-only' | undefined;
+      };
+      configInput: {
+        mode?: 'all' | 'owners-only' | undefined;
+      };
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      kind: 'catalog-filter';
+      name: 'mode';
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/namespace': OverridableExtensionDefinition<{
+      kind: 'catalog-filter';
+      name: 'namespace';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/lifecycle': OverridableExtensionDefinition<{
+      kind: 'catalog-filter';
+      name: 'lifecycle';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/processing-status': OverridableExtensionDefinition<{
+      kind: 'catalog-filter';
+      name: 'processing-status';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'catalog-filter:catalog/list': OverridableExtensionDefinition<{
+      config: {
+        initialFilter: 'all' | 'owned' | 'starred';
+      };
+      configInput: {
+        initialFilter?: 'all' | 'owned' | 'starred' | undefined;
+      };
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      kind: 'catalog-filter';
+      name: 'list';
+      params: {
+        loader: () => Promise<JSX.Element>;
+      };
+    }>;
+    'entity-card:catalog/about': OverridableExtensionDefinition<{
+      config: {
+        filter: FilterPredicate | undefined;
+        type: 'info' | 'content' | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        type?: 'info' | 'content' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
+        iconLinks: ExtensionInput<
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              () => IconLinkVerticalProps,
+              'entity-icon-link-props',
+              {}
+            >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
+      kind: 'entity-card';
+      name: 'about';
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:catalog/links': OverridableExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'links';
+      config: {
+        filter: FilterPredicate | undefined;
+        type: 'info' | 'content' | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        type?: 'info' | 'content' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:catalog/labels': OverridableExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'labels';
+      config: {
+        filter: FilterPredicate | undefined;
+        type: 'info' | 'content' | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        type?: 'info' | 'content' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:catalog/depends-on-components': OverridableExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'depends-on-components';
+      config: {
+        filter: FilterPredicate | undefined;
+        type: 'info' | 'content' | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        type?: 'info' | 'content' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:catalog/depends-on-resources': OverridableExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'depends-on-resources';
+      config: {
+        filter: FilterPredicate | undefined;
+        type: 'info' | 'content' | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        type?: 'info' | 'content' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:catalog/has-components': OverridableExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'has-components';
+      config: {
+        filter: FilterPredicate | undefined;
+        type: 'info' | 'content' | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        type?: 'info' | 'content' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:catalog/has-resources': OverridableExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'has-resources';
+      config: {
+        filter: FilterPredicate | undefined;
+        type: 'info' | 'content' | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        type?: 'info' | 'content' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:catalog/has-subcomponents': OverridableExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'has-subcomponents';
+      config: {
+        filter: FilterPredicate | undefined;
+        type: 'info' | 'content' | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        type?: 'info' | 'content' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:catalog/has-subdomains': OverridableExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'has-subdomains';
+      config: {
+        filter: FilterPredicate | undefined;
+        type: 'info' | 'content' | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        type?: 'info' | 'content' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:catalog/has-systems': OverridableExtensionDefinition<{
+      kind: 'entity-card';
+      name: 'has-systems';
+      config: {
+        filter: FilterPredicate | undefined;
+        type: 'info' | 'content' | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        type?: 'info' | 'content' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-content:catalog/overview': OverridableExtensionDefinition<{
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+        filter: FilterPredicate | undefined;
+        group: string | false | undefined;
+        icon: string | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        title?: string | undefined;
+        path?: string | undefined;
+        group?: string | false | undefined;
+        icon?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<string, 'catalog.entity-content-title', {}>
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-content-group',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string | ReactElement<any, string | JSXElementConstructor<any>>,
+            'catalog.entity-content-icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {
+        layouts: ExtensionInput<
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              (props: EntityContentLayoutProps) => React.JSX.Element,
+              'catalog.entity-content-layout.component',
+              {}
+            >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+        cards: ExtensionInput<
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<
+              (entity: Entity) => boolean,
+              'catalog.entity-filter-function',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              string,
+              'catalog.entity-filter-expression',
+              {
+                optional: true;
+              }
+            >
+          | ConfigurableExtensionDataRef<
+              EntityCardType,
+              'catalog.entity-card-type',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
+      kind: 'entity-content';
+      name: 'overview';
+      params: {
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
+        defaultTitle?: [Error: `Use the 'title' param instead`];
+        title: string;
+        defaultGroup?: [Error: `Use the 'group' param instead`];
+        group?: keyof defaultEntityContentGroups | (string & {});
+        icon?: string | ReactElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
+        filter?: string | FilterPredicate | ((entity: Entity) => boolean);
+      };
+    }>;
+    'entity-icon-link:catalog/view-source': OverridableExtensionDefinition<{
+      kind: 'entity-icon-link';
+      name: 'view-source';
+      config: {
+        label: string | undefined;
+        title: string | undefined;
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        label?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            () => IconLinkVerticalProps,
+            'entity-icon-link-props',
+            {}
+          >;
+      inputs: {};
+      params: {
+        useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+        filter?: FilterPredicate | ((entity: Entity) => boolean);
+      };
+    }>;
     'search-result-list-item:catalog': OverridableExtensionDefinition<{
       kind: 'search-result-list-item';
       name: undefined;
@@ -1297,6 +1234,69 @@ const _default: OverridableFrontendPlugin<
       >;
       inputs: {};
       params: SearchResultListItemBlueprintParams;
+    }>;
+    'entity-context-menu-item:catalog/copy-entity-url': OverridableExtensionDefinition<{
+      kind: 'entity-context-menu-item';
+      name: 'copy-entity-url';
+      config: {
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: EntityContextMenuItemParams;
+    }>;
+    'entity-context-menu-item:catalog/inspect-entity': OverridableExtensionDefinition<{
+      kind: 'entity-context-menu-item';
+      name: 'inspect-entity';
+      config: {
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: EntityContextMenuItemParams;
+    }>;
+    'entity-context-menu-item:catalog/unregister-entity': OverridableExtensionDefinition<{
+      kind: 'entity-context-menu-item';
+      name: 'unregister-entity';
+      config: {
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: EntityContextMenuItemParams;
     }>;
   }
 >;

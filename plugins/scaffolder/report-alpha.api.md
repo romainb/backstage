@@ -63,6 +63,27 @@ const _default: OverridableFrontendPlugin<
     >;
   },
   {
+    'nav-item:scaffolder': OverridableExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef_2<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
+      inputs: {};
+      params: {
+        title: string;
+        icon: IconComponent;
+        routeRef: RouteRef_2<undefined>;
+      };
+    }>;
     'api:scaffolder': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
@@ -133,66 +154,6 @@ const _default: OverridableFrontendPlugin<
       >(
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'entity-icon-link:scaffolder/launch-template': OverridableExtensionDefinition<{
-      kind: 'entity-icon-link';
-      name: 'launch-template';
-      config: {
-        label: string | undefined;
-        title: string | undefined;
-        filter: FilterPredicate | undefined;
-      };
-      configInput: {
-        filter?: FilterPredicate | undefined;
-        label?: string | undefined;
-        title?: string | undefined;
-      };
-      output:
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            () => IconLinkVerticalProps,
-            'entity-icon-link-props',
-            {}
-          >;
-      inputs: {};
-      params: {
-        useProps: () => Omit<IconLinkVerticalProps, 'color'>;
-        filter?: FilterPredicate | ((entity: Entity) => boolean);
-      };
-    }>;
-    'nav-item:scaffolder': OverridableExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef_2<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef_2<undefined>;
-      };
     }>;
     'page:scaffolder': OverridableExtensionDefinition<{
       config: {
@@ -282,154 +243,80 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
-    'scaffolder-form-field:scaffolder/entity-name-picker': OverridableExtensionDefinition<{
-      kind: 'scaffolder-form-field';
-      name: 'entity-name-picker';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<FormField>,
-        'scaffolder.form-field-loader',
-        {}
-      >;
+    'sub-page:scaffolder/templates': OverridableExtensionDefinition<{
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
+      kind: 'sub-page';
+      name: 'templates';
       params: {
-        field: () => Promise<FormField>;
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
       };
     }>;
-    'scaffolder-form-field:scaffolder/entity-picker': OverridableExtensionDefinition<{
-      kind: 'scaffolder-form-field';
-      name: 'entity-picker';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<FormField>,
-        'scaffolder.form-field-loader',
-        {}
-      >;
-      inputs: {};
-      params: {
-        field: () => Promise<FormField>;
+    'sub-page:scaffolder/tasks': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'tasks';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
       };
-    }>;
-    'scaffolder-form-field:scaffolder/entity-tags-picker': OverridableExtensionDefinition<{
-      kind: 'scaffolder-form-field';
-      name: 'entity-tags-picker';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<FormField>,
-        'scaffolder.form-field-loader',
-        {}
-      >;
-      inputs: {};
-      params: {
-        field: () => Promise<FormField>;
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
       };
-    }>;
-    'scaffolder-form-field:scaffolder/multi-entity-picker': OverridableExtensionDefinition<{
-      kind: 'scaffolder-form-field';
-      name: 'multi-entity-picker';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<FormField>,
-        'scaffolder.form-field-loader',
-        {}
-      >;
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
       inputs: {};
       params: {
-        field: () => Promise<FormField>;
-      };
-    }>;
-    'scaffolder-form-field:scaffolder/my-groups-picker': OverridableExtensionDefinition<{
-      kind: 'scaffolder-form-field';
-      name: 'my-groups-picker';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<FormField>,
-        'scaffolder.form-field-loader',
-        {}
-      >;
-      inputs: {};
-      params: {
-        field: () => Promise<FormField>;
-      };
-    }>;
-    'scaffolder-form-field:scaffolder/owned-entity-picker': OverridableExtensionDefinition<{
-      kind: 'scaffolder-form-field';
-      name: 'owned-entity-picker';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<FormField>,
-        'scaffolder.form-field-loader',
-        {}
-      >;
-      inputs: {};
-      params: {
-        field: () => Promise<FormField>;
-      };
-    }>;
-    'scaffolder-form-field:scaffolder/owner-picker': OverridableExtensionDefinition<{
-      kind: 'scaffolder-form-field';
-      name: 'owner-picker';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<FormField>,
-        'scaffolder.form-field-loader',
-        {}
-      >;
-      inputs: {};
-      params: {
-        field: () => Promise<FormField>;
-      };
-    }>;
-    'scaffolder-form-field:scaffolder/repo-branch-picker': OverridableExtensionDefinition<{
-      kind: 'scaffolder-form-field';
-      name: 'repo-branch-picker';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<FormField>,
-        'scaffolder.form-field-loader',
-        {}
-      >;
-      inputs: {};
-      params: {
-        field: () => Promise<FormField>;
-      };
-    }>;
-    'scaffolder-form-field:scaffolder/repo-owner-picker': OverridableExtensionDefinition<{
-      kind: 'scaffolder-form-field';
-      name: 'repo-owner-picker';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<FormField>,
-        'scaffolder.form-field-loader',
-        {}
-      >;
-      inputs: {};
-      params: {
-        field: () => Promise<FormField>;
-      };
-    }>;
-    'scaffolder-form-field:scaffolder/repo-url-picker': OverridableExtensionDefinition<{
-      kind: 'scaffolder-form-field';
-      name: 'repo-url-picker';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        () => Promise<FormField>,
-        'scaffolder.form-field-loader',
-        {}
-      >;
-      inputs: {};
-      params: {
-        field: () => Promise<FormField>;
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef_2;
       };
     }>;
     'sub-page:scaffolder/actions': OverridableExtensionDefinition<{
@@ -508,82 +395,6 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef_2;
       };
     }>;
-    'sub-page:scaffolder/tasks': OverridableExtensionDefinition<{
-      kind: 'sub-page';
-      name: 'tasks';
-      config: {
-        path: string | undefined;
-        title: string | undefined;
-      };
-      configInput: {
-        title?: string | undefined;
-        path?: string | undefined;
-      };
-      output:
-        | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<string, 'core.title', {}>
-        | ExtensionDataRef<
-            IconElement,
-            'core.icon',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      params: {
-        path: string;
-        title: string;
-        icon?: IconElement;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef_2;
-      };
-    }>;
-    'sub-page:scaffolder/templates': OverridableExtensionDefinition<{
-      config: {
-        path: string | undefined;
-        title: string | undefined;
-      };
-      configInput: {
-        title?: string | undefined;
-        path?: string | undefined;
-      };
-      output:
-        | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<
-            RouteRef_2<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<string, 'core.title', {}>
-        | ExtensionDataRef<
-            IconElement,
-            'core.icon',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
-      kind: 'sub-page';
-      name: 'templates';
-      params: {
-        path: string;
-        title: string;
-        icon?: IconElement;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef_2;
-      };
-    }>;
     'sub-page:scaffolder/templating-extensions': OverridableExtensionDefinition<{
       kind: 'sub-page';
       name: 'templating-extensions';
@@ -620,6 +431,195 @@ const _default: OverridableFrontendPlugin<
         icon?: IconElement;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/repo-url-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'repo-url-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/entity-name-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'entity-name-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/entity-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'entity-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/owner-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'owner-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/entity-tags-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'entity-tags-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/multi-entity-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'multi-entity-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/my-groups-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'my-groups-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/owned-entity-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'owned-entity-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/repo-branch-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'repo-branch-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'scaffolder-form-field:scaffolder/repo-owner-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'repo-owner-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
+    'entity-icon-link:scaffolder/launch-template': OverridableExtensionDefinition<{
+      kind: 'entity-icon-link';
+      name: 'launch-template';
+      config: {
+        label: string | undefined;
+        title: string | undefined;
+        filter: FilterPredicate | undefined;
+      };
+      configInput: {
+        filter?: FilterPredicate | undefined;
+        label?: string | undefined;
+        title?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            () => IconLinkVerticalProps,
+            'entity-icon-link-props',
+            {}
+          >;
+      inputs: {};
+      params: {
+        useProps: () => Omit<IconLinkVerticalProps, 'color'>;
+        filter?: FilterPredicate | ((entity: Entity) => boolean);
       };
     }>;
   }

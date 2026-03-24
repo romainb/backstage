@@ -25,21 +25,6 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'api:devtools': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
     'nav-item:devtools': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -60,6 +45,21 @@ const _default: OverridableFrontendPlugin<
         icon: IconComponent;
         routeRef: RouteRef_2<undefined>;
       };
+    }>;
+    'api:devtools': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'page:devtools': OverridableExtensionDefinition<{
       config: {
@@ -137,9 +137,9 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
-    'sub-page:devtools/config': OverridableExtensionDefinition<{
+    'sub-page:devtools/info': OverridableExtensionDefinition<{
       kind: 'sub-page';
-      name: 'config';
+      name: 'info';
       config: {
         path: string | undefined;
         title: string | undefined;
@@ -175,9 +175,9 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef_2;
       };
     }>;
-    'sub-page:devtools/info': OverridableExtensionDefinition<{
+    'sub-page:devtools/config': OverridableExtensionDefinition<{
       kind: 'sub-page';
-      name: 'info';
+      name: 'config';
       config: {
         path: string | undefined;
         title: string | undefined;

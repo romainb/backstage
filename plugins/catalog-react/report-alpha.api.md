@@ -217,11 +217,11 @@ export const EntityCardBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {
     filter: FilterPredicate | undefined;
-    type: 'content' | 'info' | undefined;
+    type: 'info' | 'content' | undefined;
   };
   configInput: {
     filter?: FilterPredicate | undefined;
-    type?: 'content' | 'info' | undefined;
+    type?: 'info' | 'content' | undefined;
   };
   dataRefs: {
     filterFunction: ConfigurableExtensionDataRef<

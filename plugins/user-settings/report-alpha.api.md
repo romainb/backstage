@@ -23,27 +23,6 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'nav-item:user-settings': OverridableExtensionDefinition<{
-      kind: 'nav-item';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
-      inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      };
-    }>;
     'page:user-settings': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
@@ -118,6 +97,44 @@ const _default: OverridableFrontendPlugin<
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef;
         noHeader?: boolean;
+      };
+    }>;
+    'sub-page:user-settings/general': OverridableExtensionDefinition<{
+      kind: 'sub-page';
+      name: 'general';
+      config: {
+        path: string | undefined;
+        title: string | undefined;
+      };
+      configInput: {
+        title?: string | undefined;
+        path?: string | undefined;
+      };
+      output:
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<
+            RouteRef<AnyRouteRefParams>,
+            'core.routing.ref',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<string, 'core.title', {}>
+        | ExtensionDataRef<
+            IconElement,
+            'core.icon',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
+      params: {
+        path: string;
+        title: string;
+        icon?: IconElement;
+        loader: () => Promise<JSX.Element>;
+        routeRef?: RouteRef;
       };
     }>;
     'sub-page:user-settings/auth-providers': OverridableExtensionDefinition<{
@@ -205,42 +222,25 @@ const _default: OverridableFrontendPlugin<
         routeRef?: RouteRef;
       };
     }>;
-    'sub-page:user-settings/general': OverridableExtensionDefinition<{
-      kind: 'sub-page';
-      name: 'general';
-      config: {
-        path: string | undefined;
-        title: string | undefined;
-      };
-      configInput: {
-        title?: string | undefined;
-        path?: string | undefined;
-      };
-      output:
-        | ExtensionDataRef<string, 'core.routing.path', {}>
-        | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
-            'core.routing.ref',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<string, 'core.title', {}>
-        | ExtensionDataRef<
-            IconElement,
-            'core.icon',
-            {
-              optional: true;
-            }
-          >;
+    'nav-item:user-settings': OverridableExtensionDefinition<{
+      kind: 'nav-item';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        {
+          title: string;
+          icon: IconComponent;
+          routeRef: RouteRef<undefined>;
+        },
+        'core.nav-item.target',
+        {}
+      >;
       inputs: {};
       params: {
-        path: string;
         title: string;
-        icon?: IconElement;
-        loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        icon: IconComponent;
+        routeRef: RouteRef<undefined>;
       };
     }>;
   }

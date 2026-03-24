@@ -230,8 +230,8 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'indexPage.supportButtonContent': 'All your software catalog entities';
     readonly 'entityPage.notFoundMessage': 'There is no {{kind}} with the requested {{link}}.';
     readonly 'entityPage.notFoundLinkText': 'kind, namespace, and name';
-    readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.unknown': 'unknown';
+    readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
     readonly 'aboutCard.editButtonTitle': 'Edit Metadata';
     readonly 'aboutCard.editButtonAriaLabel': 'Edit';

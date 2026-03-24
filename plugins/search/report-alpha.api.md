@@ -29,21 +29,6 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'api:search': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: undefined;
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
     'nav-item:search': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -64,6 +49,21 @@ const _default: OverridableFrontendPlugin<
         icon: IconComponent;
         routeRef: RouteRef<undefined>;
       };
+    }>;
+    'api:search': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: undefined;
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'page:search': OverridableExtensionDefinition<{
       config: {

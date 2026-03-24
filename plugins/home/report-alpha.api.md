@@ -28,59 +28,6 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'api:home/visits': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'visits';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
-      params: <
-        TApi,
-        TImpl extends TApi,
-        TDeps extends { [name in string]: unknown },
-      >(
-        params: ApiFactory<TApi, TImpl, TDeps>,
-      ) => ExtensionBlueprintParams<AnyApiFactory>;
-    }>;
-    'app-root-element:home/visit-listener': OverridableExtensionDefinition<{
-      kind: 'app-root-element';
-      name: 'visit-listener';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {};
-      params: {
-        element: JSX.Element;
-      };
-    }>;
-    'home-page-widget:home/random-joke': OverridableExtensionDefinition<{
-      kind: 'home-page-widget';
-      name: 'random-joke';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
-      inputs: {};
-      params: HomePageWidgetBlueprintParams;
-    }>;
-    'home-page-widget:home/starred-entities': OverridableExtensionDefinition<{
-      kind: 'home-page-widget';
-      name: 'starred-entities';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
-      inputs: {};
-      params: HomePageWidgetBlueprintParams;
-    }>;
-    'home-page-widget:home/toolkit': OverridableExtensionDefinition<{
-      kind: 'home-page-widget';
-      name: 'toolkit';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
-      inputs: {};
-      params: HomePageWidgetBlueprintParams;
-    }>;
     'nav-item:home': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
@@ -202,6 +149,59 @@ const _default: OverridableFrontendPlugin<
         noHeader?: boolean;
       };
     }>;
+    'app-root-element:home/visit-listener': OverridableExtensionDefinition<{
+      kind: 'app-root-element';
+      name: 'visit-listener';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        element: JSX.Element;
+      };
+    }>;
+    'api:home/visits': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'visits';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'home-page-widget:home/toolkit': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'toolkit';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/starred-entities': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'starred-entities';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
+    'home-page-widget:home/random-joke': OverridableExtensionDefinition<{
+      kind: 'home-page-widget';
+      name: 'random-joke';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<HomePageWidgetData, 'home.widget.data', {}>;
+      inputs: {};
+      params: HomePageWidgetBlueprintParams;
+    }>;
   }
 >;
 export default _default;
@@ -224,9 +224,9 @@ export const homeTranslationRef: TranslationRef<
     readonly 'widgetSettingsOverlay.deleteWidgetTooltip': 'Delete widget';
     readonly 'widgetSettingsOverlay.submitButtonTitle': 'Submit';
     readonly 'starredEntityListItem.removeFavoriteEntityTitle': 'Remove entity from favorites';
+    readonly 'visitList.few.title': 'The more pages you visit, the more pages will appear here.';
     readonly 'visitList.empty.title': 'There are no visits to show yet.';
     readonly 'visitList.empty.description': 'Once you start using Backstage, your visits will appear here as a quick link to carry on where you left off.';
-    readonly 'visitList.few.title': 'The more pages you visit, the more pages will appear here.';
     readonly 'quickStart.title': 'Onboarding';
     readonly 'quickStart.description': 'Get started with Backstage';
     readonly 'quickStart.learnMoreLinkTitle': 'Learn more';
