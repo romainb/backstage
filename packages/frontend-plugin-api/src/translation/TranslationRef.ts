@@ -40,33 +40,30 @@ type AnyNestedMessages = { [key in string]: AnyNestedMessages | string };
 /**
  * Flattens a nested message declaration into a flat object with dot-separated keys.
  *
+ * Guards against infinite recursion by short-circuiting when `TMessages` has an
+ * index signature (i.e. `string extends keyof TMessages`), which indicates a
+ * generic `AnyNestedMessages` type rather than a concrete message object.
+ *
  * @ignore
  */
 type FlattenedMessages<TMessages extends AnyNestedMessages> =
-  // Flatten out object keys into a union structure of objects, e.g. { a: 'a', b: 'b' } -> { a: 'a' } | { b: 'b' }
-  // Any nested object will be flattened into the individual unions, e.g. { a: 'a', b: { x: 'x', y: 'y' } } -> { a: 'a' } | { 'b.x': 'x', 'b.y': 'y' }
-  // We create this structure by first nesting the desired union types into the original object, and
-  // then extract them by indexing with `keyof TMessages` to form the union.
-  // Throughout this the objects are wrapped up in a function parameter, which allows us to have the
-  // final step of flipping this unions around to an intersection by inferring the function parameter.
-  {
-    [TKey in keyof TMessages]: (
-      _: TMessages[TKey] extends infer TValue // "local variable" for the value
-        ? TValue extends AnyNestedMessages
-          ? FlattenedMessages<TValue> extends infer TNested // Recurse into nested messages, "local variable" for the result
-            ? {
-                [TNestedKey in keyof TNested as `${TKey & string}.${TNestedKey &
-                  string}`]: TNested[TNestedKey];
-              }
-            : never
-          : { [_ in TKey]: TValue } // Primitive object values are passed through with the same key
-        : never,
-    ) => void;
-    // The `[keyof TMessages]` extracts the object values union from our flattened structure, still wrapped up in function parameters.
-    // The `extends (_: infer TIntersection) => void` flips the union to an intersection, at which point we have the correct type.
-  }[keyof TMessages] extends (_: infer TIntersection) => void
-    ? // This object mapping just expands similar to the Expand<> utility type, providing nicer type hints
-      {
+  string extends keyof TMessages
+    ? { readonly [key in string]: string }
+    : {
+        [TKey in keyof TMessages]: (
+          _: TMessages[TKey] extends infer TValue
+            ? TValue extends AnyNestedMessages
+              ? FlattenedMessages<TValue> extends infer TNested
+                ? {
+                    [TNestedKey in keyof TNested as `${TKey &
+                      string}.${TNestedKey & string}`]: TNested[TNestedKey];
+                  }
+                : never
+              : { [_ in TKey]: TValue }
+            : never,
+        ) => void;
+      }[keyof TMessages] extends (_: infer TIntersection) => void
+    ? {
         readonly [TExpandKey in keyof TIntersection]: TIntersection[TExpandKey];
       }
     : never;

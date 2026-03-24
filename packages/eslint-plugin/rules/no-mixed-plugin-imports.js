@@ -190,6 +190,7 @@ module.exports = {
             /** @param {import('eslint').Rule.RuleFixer} _fixer */
             fix(_fixer) {
               // Not a fixable case, just give a suggestion to change plugin id
+              return null;
             },
           });
           suggest.push({
@@ -255,6 +256,7 @@ module.exports = {
             /** @param {import('eslint').Rule.RuleFixer} _fixer */
             fix(_fixer) {
               // Not a fixable case, just give a suggestion to remove the import
+              return null;
             },
           });
         }

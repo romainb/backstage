@@ -24,7 +24,8 @@ type WritableFileHandle = FileSystemFileHandle & {
 };
 
 // A nicer type than the one from the TS lib
-export interface IterableDirectoryHandle extends FileSystemDirectoryHandle {
+export interface IterableDirectoryHandle
+  extends Omit<FileSystemDirectoryHandle, 'values'> {
   values(): AsyncIterable<
     | ({ kind: 'file' } & WritableFileHandle)
     | ({ kind: 'directory' } & IterableDirectoryHandle)

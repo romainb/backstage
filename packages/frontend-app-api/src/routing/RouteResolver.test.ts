@@ -236,7 +236,10 @@ describe('RouteResolver', () => {
     );
     expect(
       r.resolve(
-        createRouteRef({ aliasFor: 'test.param', params: ['x'] }),
+        createRouteRef<{ x: string }>({
+          aliasFor: 'test.param',
+          params: ['x'],
+        }),
         src('/'),
       )?.({ x: '1x' }),
     ).toBe('/my-parent/1x');

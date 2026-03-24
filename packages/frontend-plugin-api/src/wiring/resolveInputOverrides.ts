@@ -25,6 +25,21 @@ import { ExtensionInput } from './createExtensionInput';
 import { ExtensionDataContainer } from './types';
 
 /** @ignore */
+type InputOverrideValue<TInput extends ExtensionInput> =
+  TInput extends ExtensionInput<
+    infer IDataRefs,
+    {
+      optional: boolean;
+      singleton: infer ISingleton extends boolean;
+      internal?: boolean;
+    }
+  >
+    ? ISingleton extends true
+      ? Iterable<ExtensionDataRefToValue<IDataRefs>>
+      : Array<Iterable<ExtensionDataRefToValue<IDataRefs>>>
+    : never;
+
+/** @ignore */
 export type ResolvedInputValueOverrides<
   TInputs extends { [inputName in string]: ExtensionInput } = {
     [inputName in string]: ExtensionInput;
@@ -33,51 +48,17 @@ export type ResolvedInputValueOverrides<
   {
     [KName in keyof TInputs as TInputs[KName] extends ExtensionInput<
       any,
-      {
-        optional: infer IOptional extends boolean;
-        singleton: boolean;
-        internal?: boolean;
-      }
+      { optional: true; singleton: boolean; internal?: boolean }
     >
-      ? IOptional extends true
-        ? never
-        : KName
-      : never]: TInputs[KName] extends ExtensionInput<
-      infer IDataRefs,
-      {
-        optional: boolean;
-        singleton: infer ISingleton extends boolean;
-        internal?: boolean;
-      }
-    >
-      ? ISingleton extends true
-        ? Iterable<ExtensionDataRefToValue<IDataRefs>>
-        : Array<Iterable<ExtensionDataRefToValue<IDataRefs>>>
-      : never;
+      ? never
+      : KName]: InputOverrideValue<TInputs[KName]>;
   } & {
     [KName in keyof TInputs as TInputs[KName] extends ExtensionInput<
       any,
-      {
-        optional: infer IOptional extends boolean;
-        singleton: boolean;
-        internal?: boolean;
-      }
+      { optional: true; singleton: boolean; internal?: boolean }
     >
-      ? IOptional extends true
-        ? KName
-        : never
-      : never]?: TInputs[KName] extends ExtensionInput<
-      infer IDataRefs,
-      {
-        optional: boolean;
-        singleton: infer ISingleton extends boolean;
-        internal?: boolean;
-      }
-    >
-      ? ISingleton extends true
-        ? Iterable<ExtensionDataRefToValue<IDataRefs>>
-        : Array<Iterable<ExtensionDataRefToValue<IDataRefs>>>
-      : never;
+      ? KName
+      : never]?: InputOverrideValue<TInputs[KName]>;
   }
 >;
 
