@@ -15,7 +15,7 @@
  */
 
 // @types/marked-terminal only covers v6 and is incompatible with
-// marked-terminal v7 + marked v17. This declaration covers our usage.
+// marked-terminal v7 + marked v15. This declaration covers our usage.
 declare module 'marked-terminal' {
   import type { MarkedExtension } from 'marked';
 

@@ -112,9 +112,10 @@ describe('execute command', () => {
       args: ['catalog:refresh', '--help'],
     });
 
-    expect(stderrSpy).toHaveBeenCalledWith(
-      'Unable to retrieve action schema. Showing generic help.\n',
-    );
+    const stderrOutput = stderrSpy.mock.calls.map(c => c[0]).join('');
+    expect(stderrOutput).toContain('Unable to retrieve action schema');
+    expect(stderrOutput).toContain('Not authenticated');
+    expect(stderrOutput).toContain('Showing generic help.');
 
     const cliCall = mockCli.mock.calls[0][0];
     const cliFlags = cliCall.flags as Record<string, unknown>;
@@ -201,6 +202,45 @@ describe('execute command', () => {
     expect(stdoutSpy).toHaveBeenCalledWith(
       `${JSON.stringify({ refreshed: true }, null, 2)}\n`,
     );
+  });
+
+  it('throws on invalid JSON for complex flag values', async () => {
+    const actionWithObject = {
+      ...testAction,
+      schema: {
+        input: {
+          properties: {
+            ...testAction.schema.input.properties,
+            metadata: { type: 'object', description: 'Entity metadata' },
+          },
+          required: ['entityRef'],
+        },
+        output: {},
+      },
+    };
+    mockResolveAuth.mockResolvedValue(authResponse());
+    mockListForPlugin.mockResolvedValue([actionWithObject]);
+    (mockCli as jest.Mock).mockReturnValue({
+      flags: {
+        entityRef: 'component:default/foo',
+        metadata: 'not-valid-json',
+        instance: undefined,
+        help: undefined,
+      },
+    });
+
+    await expect(
+      executeCommand({
+        ...baseContext,
+        args: [
+          'catalog:refresh',
+          '--entityRef',
+          'component:default/foo',
+          '--metadata',
+          'not-valid-json',
+        ],
+      }),
+    ).rejects.toThrow('Invalid JSON for --metadata. Expected a JSON string.');
   });
 
   it('throws when action is not found during execution', async () => {

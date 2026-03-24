@@ -66,20 +66,16 @@ export class ActionsClient {
   }
 
   async listGrouped(pluginSources: string[]): Promise<GroupedActions> {
-    const results: GroupedActions = [];
-
-    for (const pluginId of pluginSources) {
-      const url = pluginActionsUrl(this.baseUrl, pluginId);
-
-      const response = await httpJson<ListActionsResponse>(url, {
-        headers: { Authorization: `Bearer ${this.accessToken}` },
-        signal: AbortSignal.timeout(30_000),
-      });
-
-      results.push({ pluginId, actions: response.actions });
-    }
-
-    return results;
+    return Promise.all(
+      pluginSources.map(async pluginId => {
+        const url = pluginActionsUrl(this.baseUrl, pluginId);
+        const response = await httpJson<ListActionsResponse>(url, {
+          headers: { Authorization: `Bearer ${this.accessToken}` },
+          signal: AbortSignal.timeout(30_000),
+        });
+        return { pluginId, actions: response.actions };
+      }),
+    );
   }
 
   async listForPlugin(actionId: string): Promise<ActionDef[]> {

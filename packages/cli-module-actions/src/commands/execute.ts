@@ -21,6 +21,26 @@ import { schemaToFlags, getComplexKeys } from '../lib/schemaToFlags';
 import { resolveAuth } from '../lib/resolveAuth';
 import { formatActionHelp } from '../lib/format';
 
+function showGenericHelp(
+  info: CliCommandContext['info'],
+  args: string[],
+): void {
+  cli(
+    {
+      help: info,
+      parameters: ['<action-id>'],
+      flags: {
+        instance: {
+          type: String,
+          description: 'Name of the instance to use',
+        },
+      },
+    },
+    undefined,
+    args,
+  );
+}
+
 export default async ({ args, info }: CliCommandContext) => {
   const instanceIdx = args.indexOf('--instance');
   const instanceFlag = instanceIdx !== -1 ? args[instanceIdx + 1] : undefined;
@@ -79,62 +99,24 @@ export default async ({ args, info }: CliCommandContext) => {
         );
         return;
       }
-    } catch {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
       process.stderr.write(
-        'Unable to retrieve action schema. Showing generic help.\n',
+        `Unable to retrieve action schema: ${msg}\nShowing generic help.\n`,
       );
     }
 
-    cli(
-      {
-        help: info,
-        parameters: ['<action-id>'],
-        flags: {
-          instance: {
-            type: String,
-            description: 'Name of the instance to use',
-          },
-        },
-      },
-      undefined,
-      args,
-    );
+    showGenericHelp(info, args);
     return;
   }
 
   if (wantsHelp) {
-    cli(
-      {
-        help: info,
-        parameters: ['<action-id>'],
-        flags: {
-          instance: {
-            type: String,
-            description: 'Name of the instance to use',
-          },
-        },
-      },
-      undefined,
-      args,
-    );
+    showGenericHelp(info, args);
     return;
   }
 
   if (!actionId) {
-    cli(
-      {
-        help: info,
-        parameters: ['<action-id>'],
-        flags: {
-          instance: {
-            type: String,
-            description: 'Name of the instance to use',
-          },
-        },
-      },
-      undefined,
-      ['--help', ...args],
-    );
+    showGenericHelp(info, ['--help', ...args]);
     throw new Error('Action ID is required');
   }
 
