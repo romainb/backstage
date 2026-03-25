@@ -178,6 +178,14 @@ export function AboutContent(props: AboutContentProps) {
           />
         </AboutField>
       )}
+      <AboutField
+        label={t('aboutCard.tagsField.label')}
+        value={t('aboutCard.tagsField.value')}
+      >
+        {(entity?.metadata?.tags || []).map(tag => (
+          <Chip key={tag} size="small" label={tag} />
+        ))}
+      </AboutField>
       {(isAPI ||
         isComponent ||
         isResource ||
@@ -198,14 +206,7 @@ export function AboutContent(props: AboutContentProps) {
           value={entity?.spec?.lifecycle as string}
         />
       )}
-      <AboutField
-        label={t('aboutCard.tagsField.label')}
-        value={t('aboutCard.tagsField.value')}
-      >
-        {(entity?.metadata?.tags || []).map(tag => (
-          <Chip key={tag} size="small" label={tag} />
-        ))}
-      </AboutField>
+      <AboutField label={t('aboutCard.kindField.label')} value={entity.kind} />
       {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (
         <Grid.Item colSpan={columns}>
           <AboutField label={t('aboutCard.targetsField.label')}>
