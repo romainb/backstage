@@ -11,8 +11,8 @@ describe('TodoList', () => {
 
     await renderInTestApp(<TodoList todos={todos} />);
 
-    expect(screen.getByText('First task')).toBeInTheDocument();
-    expect(screen.getByText('Second task')).toBeInTheDocument();
-    expect(screen.getByText('user:default/guest')).toBeInTheDocument();
+    expect(await screen.findByText('First task')).toBeInTheDocument();
+    expect(await screen.findByText('Second task')).toBeInTheDocument();
+    expect(await screen.findByText('user:default/guest')).toBeInTheDocument();
   });
 });
