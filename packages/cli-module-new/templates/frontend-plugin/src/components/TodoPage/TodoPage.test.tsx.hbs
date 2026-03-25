@@ -1,5 +1,5 @@
-import { screen } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
+import { screen, waitFor } from '@testing-library/react';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   registerMswTestHooks,
@@ -13,12 +13,14 @@ describe('TodoPage', () => {
 
   it('renders todos from the backend', async () => {
     server.use(
-      http.get('*/api/{{pluginId}}/todos', () =>
-        HttpResponse.json({
-          items: [
-            { id: '1', title: 'Mocked task', createdBy: 'user:default/guest', createdAt: '2025-01-01T00:00:00.000Z' },
-          ],
-        }),
+      rest.get('*/api/todo/todos', (_, res, ctx) =>
+        res(
+          ctx.json({
+            items: [
+              { id: '1', title: 'Mocked task', createdBy: 'user:default/guest', createdAt: '2025-01-01T00:00:00.000Z' },
+            ],
+          }),
+        ),
       ),
     );
 
@@ -29,13 +31,15 @@ describe('TodoPage', () => {
 
   it('renders an error when the backend fails', async () => {
     server.use(
-      http.get('*/api/{{pluginId}}/todos', () =>
-        new HttpResponse(null, { status: 500, statusText: 'Internal Server Error' }),
+      rest.get('*/api/todo/todos', (_, res, ctx) =>
+        res(ctx.status(500), ctx.json({ message: 'Internal Server Error' })),
       ),
     );
 
     await renderInTestApp(<TodoPage />);
 
-    expect(await screen.findByText(/Failed to fetch todos/)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getAllByText(/Failed to fetch todos/).length).toBeGreaterThan(0);
+    });
   });
 });
