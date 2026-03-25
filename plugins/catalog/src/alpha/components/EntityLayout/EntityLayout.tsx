@@ -16,16 +16,14 @@
 
 import { ComponentProps, ReactNode, ReactElement } from 'react';
 
-import Alert from '@material-ui/lab/Alert';
-
 import {
   attachComponentData,
   useElementFilter,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { Link, Progress, WarningPanel } from '@backstage/core-components';
-import { Container } from '@backstage/ui';
+import { Progress } from '@backstage/core-components';
+import { Alert, Container, Link } from '@backstage/ui';
 import { Entity } from '@backstage/catalog-model';
 import {
   entityRouteRef,
@@ -165,7 +163,12 @@ export const EntityLayout = (props: EntityLayoutProps) => {
 
       {error && (
         <Container mt="6">
-          <Alert severity="error">{error.toString()}</Alert>
+          <Alert
+            role="alert"
+            status="danger"
+            icon
+            description={error.toString()}
+          />
         </Container>
       )}
 
@@ -174,16 +177,24 @@ export const EntityLayout = (props: EntityLayoutProps) => {
           {NotFoundComponent ? (
             NotFoundComponent
           ) : (
-            <WarningPanel title={t('entityLabels.warningPanelTitle')}>
-              {t('entityPage.notFoundMessage', {
+            <Alert
+              role="alert"
+              status="warning"
+              icon
+              title={t('entityLabels.warningPanelTitle')}
+              description={t('entityPage.notFoundMessage', {
                 kind,
                 link: (
-                  <Link to="https://backstage.io/docs/features/software-catalog/references">
+                  <Link
+                    variant="body-small"
+                    color="warning"
+                    href="https://backstage.io/docs/features/software-catalog/references"
+                  >
                     {t('entityPage.notFoundLinkText')}
                   </Link>
                 ),
               })}
-            </WarningPanel>
+            />
           )}
         </Container>
       )}
