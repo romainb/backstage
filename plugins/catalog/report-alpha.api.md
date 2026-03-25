@@ -36,6 +36,10 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 export const catalogTranslationRef: TranslationRef<
   'catalog',
   {
+    readonly 'favoriteEntity.removeLabel': 'Remove from favorites';
+    readonly 'favoriteEntity.addLabel': 'Add to favorites';
+    readonly 'favoriteEntity.addedStatus': 'Added to favorites';
+    readonly 'favoriteEntity.removedStatus': 'Removed from favorites';
     readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates.';
     readonly 'deleteEntity.cancelButtonTitle': 'Cancel';
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
@@ -1275,6 +1279,17 @@ const _default: OverridableFrontendPlugin<
         loader?: () => Promise<JSX_2.Element>;
         routeRef?: RouteRef_2;
         noHeader?: boolean;
+      };
+    }>;
+    'plugin-header-action:catalog/create-button': OverridableExtensionDefinition<{
+      kind: 'plugin-header-action';
+      name: 'create-button';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
+      inputs: {};
+      params: {
+        loader: () => Promise<JSX.Element>;
       };
     }>;
     'search-result-list-item:catalog': OverridableExtensionDefinition<{

@@ -1,8 +1,8 @@
 ---
-'@backstage/plugin-catalog-react': major
+'@backstage/plugin-catalog-react': minor
 ---
 
-**BREAKING**: The `EntityContextMenuItemBlueprint` factory now renders BUI `MenuItem` instead of MUI `MenuItem`. MUI icons passed via the `icon` param are automatically sized to fit, but other icon types may render differently. We recommend checking that your custom context menu items look correct and switching to Remixicon equivalents if needed.
+**BREAKING ALPHA**: The `EntityContextMenuItemBlueprint` factory now renders BUI `MenuItem` instead of MUI `MenuItem`. MUI icons passed via the `icon` param are automatically sized to fit, but other icon types may render differently. We recommend checking that your custom context menu items look correct and switching to Remixicon equivalents if needed.
 
 ```diff
 - import DeleteIcon from '@material-ui/icons/Delete';

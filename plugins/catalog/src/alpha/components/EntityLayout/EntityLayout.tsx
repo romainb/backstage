@@ -24,13 +24,8 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import {
-  Content,
-  Link,
-  Page,
-  Progress,
-  WarningPanel,
-} from '@backstage/core-components';
+import { Link, Progress, WarningPanel } from '@backstage/core-components';
+import { Container } from '@backstage/ui';
 import { Entity } from '@backstage/catalog-model';
 import {
   entityRouteRef,
@@ -38,8 +33,8 @@ import {
 } from '@backstage/plugin-catalog-react';
 
 import { catalogTranslationRef } from '../../translation';
+import { useEntityTabs } from '../../hooks/useEntityTabs';
 import { EntityHeader } from '../EntityHeader';
-import { EntityTabs } from '../EntityTabs';
 import { EntityContentGroupDefinitions } from '@backstage/plugin-catalog-react/alpha';
 
 export type EntityLayoutRouteProps = {
@@ -109,10 +104,8 @@ export const EntityLayout = (props: EntityLayoutProps) => {
     children,
     header,
     NotFoundComponent,
-    parentEntityRelations,
     groupDefinitions,
     defaultContentOrder,
-    showNavItemIcons,
   } = props;
   const { kind } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
@@ -140,45 +133,44 @@ export const EntityLayout = (props: EntityLayoutProps) => {
               title: elementProps.title,
               group: elementProps.group,
               children: elementProps.children,
-              icon: elementProps.icon,
             },
           ];
         }),
     [entity],
   );
 
+  const { tabs, activeTabId, content } = useEntityTabs({
+    routes,
+    groupDefinitions,
+    defaultContentOrder,
+  });
+
   const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
-    <Page themeId={entity?.spec?.type?.toString() ?? 'home'}>
+    <>
       {header ?? (
         <EntityHeader
-          parentEntityRelations={parentEntityRelations}
           UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
           UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
           contextMenuItems={contextMenuItems}
+          tabs={entity ? tabs : undefined}
+          activeTabId={entity ? activeTabId : undefined}
         />
       )}
 
       {loading && <Progress />}
 
-      {entity && (
-        <EntityTabs
-          routes={routes}
-          groupDefinitions={groupDefinitions}
-          defaultContentOrder={defaultContentOrder}
-          showIcons={showNavItemIcons}
-        />
-      )}
+      {entity && <Container mt="6">{content}</Container>}
 
       {error && (
-        <Content>
+        <Container mt="6">
           <Alert severity="error">{error.toString()}</Alert>
-        </Content>
+        </Container>
       )}
 
       {!loading && !error && !entity && (
-        <Content>
+        <Container mt="6">
           {NotFoundComponent ? (
             NotFoundComponent
           ) : (
@@ -193,9 +185,9 @@ export const EntityLayout = (props: EntityLayoutProps) => {
               })}
             </WarningPanel>
           )}
-        </Content>
+        </Container>
       )}
-    </Page>
+    </>
   );
 };
 

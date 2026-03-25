@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   createExtensionTester,
@@ -142,6 +142,8 @@ describe('Entity page', () => {
   });
 
   describe('Entity Page Groups', () => {
+    const user = userEvent.setup();
+
     it('Should render a group as dropdown', async () => {
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
@@ -167,26 +169,20 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /Documentation/ }),
-        ).toBeInTheDocument(),
-      );
+      const docButton = await screen.findByRole('button', {
+        name: /Documentation/,
+      });
+      expect(docButton).toBeInTheDocument();
 
-      await userEvent.click(screen.getByRole('tab', { name: /Documentation/ }));
+      await user.click(docButton);
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
+      expect(
+        await screen.findByRole('menuitemradio', { name: /TechDocs/ }),
+      ).toHaveAttribute('href', '/techdocs');
 
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      expect(
+        screen.getByRole('menuitemradio', { name: /ApiDocs/ }),
+      ).toHaveAttribute('href', '/apidocs');
     });
 
     it('Should rename a default group', async () => {
@@ -223,24 +219,18 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(screen.queryByRole('tab', { name: /Docs/ })).toBeInTheDocument(),
-      );
+      const docsButton = await screen.findByRole('button', { name: /Docs/ });
+      expect(docsButton).toBeInTheDocument();
 
-      await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
+      await user.click(docsButton);
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
+      expect(
+        await screen.findByRole('menuitemradio', { name: /TechDocs/ }),
+      ).toHaveAttribute('href', '/techdocs');
 
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      expect(
+        screen.getByRole('menuitemradio', { name: /ApiDocs/ }),
+      ).toHaveAttribute('href', '/apidocs');
     });
 
     it('Should disassociate a content with a default group', async () => {
@@ -272,23 +262,21 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(
-          screen.queryByRole('tab', { name: /Documentation/ }),
-        ).not.toBeInTheDocument(),
-      );
+      const nav = await screen.findByRole('navigation', {
+        name: /Content navigation/,
+      });
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /TechDocs/ }),
-        ).toBeInTheDocument(),
-      );
+      expect(
+        within(nav).queryByRole('button', { name: /Documentation/ }),
+      ).not.toBeInTheDocument();
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /ApiDocs/ }),
-        ).toBeInTheDocument(),
-      );
+      expect(
+        within(nav).getByRole('link', { name: /TechDocs/ }),
+      ).toBeInTheDocument();
+
+      expect(
+        within(nav).getByRole('link', { name: /ApiDocs/ }),
+      ).toBeInTheDocument();
     });
 
     it('Should create a custom group', async () => {
@@ -333,24 +321,18 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(screen.getByRole('tab', { name: /Docs/ })).toBeInTheDocument(),
-      );
+      const docsButton = await screen.findByRole('button', { name: /Docs/ });
+      expect(docsButton).toBeInTheDocument();
 
-      await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
+      await user.click(docsButton);
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
+      expect(
+        await screen.findByRole('menuitemradio', { name: /TechDocs/ }),
+      ).toHaveAttribute('href', '/techdocs');
 
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      expect(
+        screen.getByRole('menuitemradio', { name: /ApiDocs/ }),
+      ).toHaveAttribute('href', '/apidocs');
     });
 
     it('Should render a single-content groups as a normal tab', async () => {
@@ -383,17 +365,17 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('tab', { name: /Overview/ }),
-        ).toBeInTheDocument(),
-      );
+      const nav = await screen.findByRole('navigation', {
+        name: /Content navigation/,
+      });
 
-      await waitFor(() =>
-        expect(
-          screen.queryByRole('tab', { name: /Development/ }),
-        ).not.toBeInTheDocument(),
-      );
+      expect(
+        within(nav).getByRole('link', { name: /Overview/ }),
+      ).toBeInTheDocument();
+
+      expect(
+        within(nav).queryByRole('button', { name: /Development/ }),
+      ).not.toBeInTheDocument();
     });
 
     it('Should render groups first', async () => {
@@ -422,10 +404,15 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(2));
+      const nav = await screen.findByRole('navigation', {
+        name: /Content navigation/,
+      });
+      const list = within(nav).getByRole('list');
+      const items = within(list).getAllByRole('listitem');
+      expect(items).toHaveLength(2);
 
-      expect(screen.getAllByRole('tab')[0]).toHaveTextContent('Documentation');
-      expect(screen.getAllByRole('tab')[1]).toHaveTextContent('Overview');
+      expect(items[0]).toHaveTextContent('Documentation');
+      expect(items[1]).toHaveTextContent('Overview');
     });
 
     it('Should resolve group aliases', async () => {
@@ -462,24 +449,18 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() =>
-        expect(screen.getByRole('tab', { name: /Docs/ })).toBeInTheDocument(),
-      );
+      const docsButton = await screen.findByRole('button', { name: /Docs/ });
+      expect(docsButton).toBeInTheDocument();
 
-      await userEvent.click(screen.getByRole('tab', { name: /Docs/ }));
+      await user.click(docsButton);
 
-      await waitFor(() =>
-        expect(
-          screen.getByRole('button', { name: /TechDocs/ }),
-        ).toHaveAttribute('href', '/techdocs'),
-      );
+      expect(
+        await screen.findByRole('menuitemradio', { name: /TechDocs/ }),
+      ).toHaveAttribute('href', '/techdocs');
 
-      await waitFor(() =>
-        expect(screen.getByRole('button', { name: /ApiDocs/ })).toHaveAttribute(
-          'href',
-          '/apidocs',
-        ),
-      );
+      expect(
+        screen.getByRole('menuitemradio', { name: /ApiDocs/ }),
+      ).toHaveAttribute('href', '/apidocs');
     });
 
     it('Should sort content by title by default', async () => {
@@ -507,15 +488,15 @@ describe('Entity page', () => {
         },
       });
 
-      await userEvent.click(
-        await screen.findByRole('tab', { name: /Documentation/ }),
+      await user.click(
+        await screen.findByRole('button', { name: /Documentation/ }),
       );
 
-      const buttons = await screen.findAllByRole('button', {
+      const menuItems = await screen.findAllByRole('menuitemradio', {
         name: /Docs/,
       });
-      expect(buttons[0]).toHaveTextContent('ApiDocs');
-      expect(buttons[1]).toHaveTextContent('TechDocs');
+      expect(menuItems[0]).toHaveTextContent('ApiDocs');
+      expect(menuItems[1]).toHaveTextContent('TechDocs');
     });
 
     it('Should preserve natural order when configured', async () => {
@@ -548,15 +529,15 @@ describe('Entity page', () => {
         },
       });
 
-      await userEvent.click(
-        await screen.findByRole('tab', { name: /Documentation/ }),
+      await user.click(
+        await screen.findByRole('button', { name: /Documentation/ }),
       );
 
-      const buttons = await screen.findAllByRole('button', {
+      const menuItems = await screen.findAllByRole('menuitemradio', {
         name: /Docs/,
       });
-      expect(buttons[0]).toHaveTextContent('TechDocs');
-      expect(buttons[1]).toHaveTextContent('ApiDocs');
+      expect(menuItems[0]).toHaveTextContent('TechDocs');
+      expect(menuItems[1]).toHaveTextContent('ApiDocs');
     });
 
     it('Should support per-group content order override', async () => {
@@ -597,15 +578,15 @@ describe('Entity page', () => {
         },
       });
 
-      await userEvent.click(
-        await screen.findByRole('tab', { name: /Documentation/ }),
+      await user.click(
+        await screen.findByRole('button', { name: /Documentation/ }),
       );
 
-      const buttons = await screen.findAllByRole('button', {
+      const menuItems = await screen.findAllByRole('menuitemradio', {
         name: /Docs/,
       });
-      expect(buttons[0]).toHaveTextContent('TechDocs');
-      expect(buttons[1]).toHaveTextContent('ApiDocs');
+      expect(menuItems[0]).toHaveTextContent('TechDocs');
+      expect(menuItems[1]).toHaveTextContent('ApiDocs');
     });
 
     it('Should render groups on the correct order', async () => {
@@ -646,10 +627,15 @@ describe('Entity page', () => {
         },
       });
 
-      await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(2));
+      const nav = await screen.findByRole('navigation', {
+        name: /Content navigation/,
+      });
+      const list = within(nav).getByRole('list');
+      const items = within(list).getAllByRole('listitem');
+      expect(items).toHaveLength(2);
 
-      expect(screen.getAllByRole('tab')[0]).toHaveTextContent('Overview');
-      expect(screen.getAllByRole('tab')[1]).toHaveTextContent('Documentation');
+      expect(items[0]).toHaveTextContent('Overview');
+      expect(items[1]).toHaveTextContent('Documentation');
     });
   });
 
@@ -748,7 +734,7 @@ describe('Entity page', () => {
         }),
       },
     ])('should render an href based context menu item', async params => {
-      const menuItem = EntityContextMenuItemBlueprint.make({
+      const hrefMenuItem = EntityContextMenuItemBlueprint.make({
         name: 'test-href',
         params: {
           icon: <span>Test Icon</span>,
@@ -757,7 +743,7 @@ describe('Entity page', () => {
       });
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
-      ).add(menuItem);
+      ).add(hrefMenuItem);
 
       await renderInTestApp(tester.reactElement(), {
         apis: [
@@ -778,15 +764,19 @@ describe('Entity page', () => {
       });
       const { disabled } = params.useProps();
 
-      await userEvent.click(await screen.findByTestId('menu-button'));
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'More actions' }),
+      );
 
-      await waitFor(async () => {
-        expect(screen.getByText('Test Title')).toBeInTheDocument();
-        expect(screen.getByText('Test Icon')).toBeInTheDocument();
-        const anchor = screen.getByText('Test Title').closest('a');
-        expect(anchor).toHaveAttribute('href', '/somewhere');
-        expect(anchor).toHaveAttribute('aria-disabled', disabled.toString());
+      const menuItem = await screen.findByRole('menuitem', {
+        name: /Test Title/,
       });
+      expect(menuItem).toBeInTheDocument();
+      expect(screen.getByText('Test Icon')).toBeInTheDocument();
+      expect(menuItem).toHaveAttribute('href', '/somewhere');
+      expect(menuItem.getAttribute('data-disabled')).toBe(
+        disabled ? 'true' : null,
+      );
     });
 
     it.each([
@@ -805,7 +795,7 @@ describe('Entity page', () => {
         }),
       },
     ])('should render an onClick based context menu item', async params => {
-      const menuItem = EntityContextMenuItemBlueprint.make({
+      const clickMenuItem = EntityContextMenuItemBlueprint.make({
         name: 'test-click',
         params: {
           icon: <span>Test Icon</span>,
@@ -814,7 +804,7 @@ describe('Entity page', () => {
       });
       const tester = createExtensionTester(
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
-      ).add(menuItem);
+      ).add(clickMenuItem);
 
       await renderInTestApp(tester.reactElement(), {
         apis: [
@@ -836,23 +826,20 @@ describe('Entity page', () => {
 
       const { disabled } = params.useProps();
 
-      // Wait for entity to load first
-      await waitFor(() =>
-        expect(screen.getByText(/artist-lookup/)).toBeInTheDocument(),
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'More actions' }),
       );
 
-      await userEvent.click(screen.getByTestId('menu-button'));
-
-      // Wait for menu to open
-      await waitFor(() =>
-        expect(screen.getByText('Test Title')).toBeInTheDocument(),
-      );
-
+      const menuItem = await screen.findByRole('menuitem', {
+        name: /Test Title/,
+      });
+      expect(menuItem).toBeInTheDocument();
       expect(screen.getByText('Test Icon')).toBeInTheDocument();
-      const listItem = screen.getByText('Test Title').closest('li');
-      expect(listItem).toHaveAttribute('aria-disabled', disabled.toString());
+      expect(menuItem.getAttribute('data-disabled')).toBe(
+        disabled ? 'true' : null,
+      );
       if (!disabled) {
-        await userEvent.click(screen.getByText('Test Title'));
+        await userEvent.click(menuItem);
       }
 
       expect(onClickMock).toHaveBeenCalledTimes(disabled ? 0 : 1);
@@ -928,14 +915,16 @@ describe('Entity page', () => {
           ],
         });
 
-        await userEvent.click(await screen.findByTestId('menu-button'));
+        await userEvent.click(
+          await screen.findByRole('button', { name: 'More actions' }),
+        );
 
-        await waitFor(async () => {
-          expect(screen.getByText('Should Render')).toBeInTheDocument();
-          expect(
-            screen.queryByText('Should Not Render'),
-          ).not.toBeInTheDocument();
-        });
+        expect(
+          await screen.findByRole('menuitem', { name: /Should Render/ }),
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByRole('menuitem', { name: /Should Not Render/ }),
+        ).not.toBeInTheDocument();
       },
     );
   });

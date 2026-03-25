@@ -18,9 +18,7 @@ import {
   EntityContextMenuItemBlueprint,
   useEntityPermission,
 } from '@backstage/plugin-catalog-react/alpha';
-import FileCopyTwoToneIcon from '@material-ui/icons/FileCopyTwoTone';
-import BugReportIcon from '@material-ui/icons/BugReport';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { RiFileCopyLine, RiBugLine, RiCloseCircleLine } from '@remixicon/react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -42,7 +40,7 @@ export const copyEntityUrlContextMenuItem = EntityContextMenuItemBlueprint.make(
   {
     name: 'copy-entity-url',
     params: {
-      icon: <FileCopyTwoToneIcon fontSize="small" />,
+      icon: <RiFileCopyLine />,
       useProps: () => {
         const [copyState, copyToClipboard] = useCopyToClipboard();
         const alertApi = useApi(alertApiRef);
@@ -73,7 +71,7 @@ export const inspectEntityContextMenuItem = EntityContextMenuItemBlueprint.make(
   {
     name: 'inspect-entity',
     params: {
-      icon: <BugReportIcon fontSize="small" />,
+      icon: <RiBugLine />,
       useProps: () => {
         const [_, setSearchParams] = useSearchParams();
         const { t } = useTranslationRef(catalogTranslationRef);
@@ -93,7 +91,7 @@ export const unregisterEntityContextMenuItem =
   EntityContextMenuItemBlueprint.make({
     name: 'unregister-entity',
     params: {
-      icon: <CancelIcon fontSize="small" />,
+      icon: <RiCloseCircleLine />,
       useProps: () => {
         const { entity } = useEntity();
         const dialogApi = useApi(dialogApiRef);

@@ -24,7 +24,7 @@ import {
   TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { HeaderPage } from '@backstage/ui';
+import { Header, Container } from '@backstage/ui';
 import {
   CatalogFilterLayout,
   DefaultFilters,
@@ -96,31 +96,19 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
 function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
-  const createComponentLink = useRouteRef(createComponentRouteRef);
   const { t } = useTranslationRef(catalogTranslationRef);
-  const { allowed } = usePermission({
-    permission: catalogEntityCreatePermission,
-  });
 
   return (
     <>
-      <HeaderPage
+      <Header
         title={t('indexPage.title', { orgName })}
         customActions={
-          <>
-            {allowed && (
-              <CreateButton
-                title={t('indexPage.createButtonTitle')}
-                to={createComponentLink && createComponentLink()}
-              />
-            )}
-            <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
-          </>
+          <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
         }
       />
-      <Content>
+      <Container mt="6">
         <CatalogPageContent {...props} />
-      </Content>
+      </Container>
     </>
   );
 }

@@ -220,6 +220,10 @@ export type CatalogTableToolbarClassKey = 'root' | 'text';
 export const catalogTranslationRef: TranslationRef<
   'catalog',
   {
+    readonly 'favoriteEntity.removeLabel': 'Remove from favorites';
+    readonly 'favoriteEntity.addLabel': 'Add to favorites';
+    readonly 'favoriteEntity.addedStatus': 'Added to favorites';
+    readonly 'favoriteEntity.removedStatus': 'Removed from favorites';
     readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates.';
     readonly 'deleteEntity.cancelButtonTitle': 'Cancel';
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';

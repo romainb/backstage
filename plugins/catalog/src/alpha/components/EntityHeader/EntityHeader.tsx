@@ -14,155 +14,20 @@
  * limitations under the License.
  */
 
+import { ComponentProps, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Header, type HeaderNavTabItem } from '@backstage/ui';
+import { useRouteRefParams } from '@backstage/core-plugin-api';
+import { type IconComponent } from '@backstage/frontend-plugin-api';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
-  useState,
-  useCallback,
-  useEffect,
-  ComponentProps,
-  ReactNode,
-} from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import useAsync from 'react-use/esm/useAsync';
-
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-
-import { Header, Breadcrumbs } from '@backstage/core-components';
-import {
-  useApi,
-  useRouteRef,
-  useRouteRefParams,
-} from '@backstage/core-plugin-api';
-import { IconComponent } from '@backstage/frontend-plugin-api';
-
-import {
-  Entity,
-  EntityRelation,
-  DEFAULT_NAMESPACE,
-} from '@backstage/catalog-model';
-
-import {
-  useAsyncEntity,
   entityRouteRef,
-  catalogApiRef,
-  EntityRefLink,
+  useAsyncEntity,
+  useEntityPresentation,
   InspectEntityDialog,
-  UnregisterEntityDialog,
-  EntityDisplayName,
-  FavoriteEntity,
 } from '@backstage/plugin-catalog-react';
-
-import { EntityLabels } from '../EntityLabels';
-import { EntityContextMenu } from '../../../components/EntityContextMenu';
-import { rootRouteRef, unregisterRedirectRouteRef } from '../../../routes';
-
-function headerProps(
-  paramKind: string | undefined,
-  paramNamespace: string | undefined,
-  paramName: string | undefined,
-  entity: Entity | undefined,
-): { headerTitle: string; headerType: string } {
-  const kind = paramKind ?? entity?.kind ?? '';
-  const namespace = paramNamespace ?? entity?.metadata.namespace ?? '';
-  const name =
-    entity?.metadata.title ?? paramName ?? entity?.metadata.name ?? '';
-
-  return {
-    headerTitle: `${name}${
-      namespace && namespace !== DEFAULT_NAMESPACE ? ` in ${namespace}` : ''
-    }`,
-    headerType: (() => {
-      let t = kind.toLocaleLowerCase('en-US');
-      if (entity && entity.spec && 'type' in entity.spec) {
-        t += ' — ';
-        t += (entity.spec as { type: string }).type.toLocaleLowerCase('en-US');
-      }
-      return t;
-    })(),
-  };
-}
-
-function findParentRelation(
-  entityRelations: EntityRelation[] = [],
-  relationTypes: string[] = [],
-) {
-  for (const type of relationTypes) {
-    const foundRelation = entityRelations.find(
-      relation => relation.type === type,
-    );
-    if (foundRelation) {
-      return foundRelation; // Return the first found relation and stop
-    }
-  }
-  return null;
-}
-
-const useStyles = makeStyles(theme => ({
-  breadcrumbs: {
-    color: theme.page.fontColor,
-    fontSize: theme.typography.caption.fontSize,
-    textTransform: 'uppercase',
-    marginTop: theme.spacing(1),
-    opacity: 0.8,
-    '& span ': {
-      color: theme.page.fontColor,
-      textDecoration: 'underline',
-      textUnderlineOffset: '3px',
-    },
-  },
-}));
-
-function EntityHeaderTitle() {
-  const { entity } = useAsyncEntity();
-  const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
-  const { headerTitle: title } = headerProps(kind, namespace, name, entity);
-  return (
-    <Box display="inline-flex" alignItems="center" height="1em" maxWidth="100%">
-      <Box
-        component="span"
-        textOverflow="ellipsis"
-        whiteSpace="nowrap"
-        overflow="hidden"
-      >
-        {entity ? <EntityDisplayName entityRef={entity} hideIcon /> : title}
-      </Box>
-      {entity && <FavoriteEntity entity={entity} />}
-    </Box>
-  );
-}
-
-function EntityHeaderSubtitle(props: { parentEntityRelations?: string[] }) {
-  const { parentEntityRelations } = props;
-  const classes = useStyles();
-  const { entity } = useAsyncEntity();
-  const { name } = useRouteRefParams(entityRouteRef);
-  const parentEntity = findParentRelation(
-    entity?.relations ?? [],
-    parentEntityRelations ?? [],
-  );
-
-  const catalogApi = useApi(catalogApiRef);
-
-  const { value: ancestorEntity } = useAsync(async () => {
-    if (parentEntity) {
-      return findParentRelation(
-        (await catalogApi.getEntityByRef(parentEntity?.targetRef))?.relations,
-        parentEntityRelations,
-      );
-    }
-    return null;
-  }, [parentEntity, catalogApi]);
-
-  return parentEntity ? (
-    <Breadcrumbs separator=">" className={classes.breadcrumbs}>
-      {ancestorEntity && (
-        <EntityRefLink entityRef={ancestorEntity.targetRef} disableTooltip />
-      )}
-      <EntityRefLink entityRef={parentEntity.targetRef} disableTooltip />
-      {name}
-    </Breadcrumbs>
-  ) : null;
-}
+import { FavoriteEntity } from '../FavoriteEntity';
+import { EntityContextMenu } from '../EntityContextMenu';
 
 /** @alpha */
 export function EntityHeader(props: {
@@ -179,133 +44,75 @@ export function EntityHeader(props: {
     disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
   };
   contextMenuItems?: React.JSX.Element[];
-  /**
-   * An array of relation types used to determine the parent entities in the hierarchy.
-   * These relations are prioritized in the order provided, allowing for flexible
-   * navigation through entity relationships.
-   *
-   * For example, use relation types like `["partOf", "memberOf", "ownedBy"]` to define how the entity is related to
-   * its parents in the Entity Catalog.
-   *
-   * It adds breadcrumbs in the Entity page to enhance user navigation and context awareness.
-   */
-  parentEntityRelations?: string[];
-  title?: ReactNode;
-  subtitle?: ReactNode;
+  tabs?: HeaderNavTabItem[];
+  activeTabId?: string;
 }) {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
     contextMenuItems,
-    parentEntityRelations,
-    title,
-    subtitle,
+    tabs,
+    activeTabId,
   } = props;
+
   const { entity } = useAsyncEntity();
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
-  const { headerTitle: entityFallbackText, headerType: type } = headerProps(
-    kind,
-    namespace,
-    name,
-    entity,
-  );
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  const catalogRoute = useRouteRef(rootRouteRef);
-  const unregisterRedirectRoute = useRouteRef(unregisterRedirectRouteRef);
+  // Title: use entity presentation for display name, fall back to route params
+  const entityOrRef =
+    entity ??
+    (kind && namespace && name
+      ? stringifyEntityRef({ kind, namespace, name })
+      : `${kind}:${namespace}/${name}`);
+  const { primaryTitle } = useEntityPresentation(entityOrRef);
 
-  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-
-  const openUnregisterEntityDialog = useCallback(
-    () => setConfirmationDialogOpen(true),
-    [setConfirmationDialogOpen],
-  );
-
-  const closeUnregisterEntityDialog = useCallback(
-    () => setConfirmationDialogOpen(false),
-    [setConfirmationDialogOpen],
-  );
-
-  const cleanUpAfterUnregisterConfirmation = useCallback(async () => {
-    setConfirmationDialogOpen(false);
-    navigate(
-      unregisterRedirectRoute ? unregisterRedirectRoute() : catalogRoute(),
-    );
-  }, [
-    navigate,
-    catalogRoute,
-    unregisterRedirectRoute,
-    setConfirmationDialogOpen,
-  ]);
-
-  // Make sure to close the dialog if the user clicks links in it that navigate
-  // to another entity.
-  useEffect(() => {
-    setConfirmationDialogOpen(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
+  // InspectEntityDialog state via search params
   const [searchParams, setSearchParams] = useSearchParams();
-  const selectedInspectEntityDialogTab = searchParams.get('inspect');
+  const inspectDialogOpen = searchParams.has('inspect');
+  const inspectDialogTab = searchParams.get('inspect') || undefined;
 
-  const setInspectEntityDialogTab = useCallback(
-    (newTab: string) => setSearchParams(`inspect=${newTab}`),
+  const closeInspectDialog = useCallback(
+    () => setSearchParams({}),
     [setSearchParams],
   );
 
-  const openInspectEntityDialog = useCallback(
-    () => setSearchParams('inspect'),
+  const selectInspectTab = useCallback(
+    (tab: string) => setSearchParams({ inspect: tab }),
     [setSearchParams],
   );
-
-  const closeInspectEntityDialog = useCallback(
-    () => setSearchParams(),
-    [setSearchParams],
-  );
-
-  const inspectDialogOpen = typeof selectedInspectEntityDialogTab === 'string';
 
   return (
-    <Header
-      pageTitleOverride={entityFallbackText}
-      type={type}
-      title={title ?? <EntityHeaderTitle />}
-      subtitle={
-        subtitle ?? (
-          <EntityHeaderSubtitle parentEntityRelations={parentEntityRelations} />
-        )
-      }
-    >
-      {entity && (
-        <>
-          <EntityLabels entity={entity} />
-          <EntityContextMenu
-            UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
-            UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
-            contextMenuItems={contextMenuItems}
-            onInspectEntity={openInspectEntityDialog}
-            onUnregisterEntity={openUnregisterEntityDialog}
-          />
-          <InspectEntityDialog
-            entity={entity!}
-            initialTab={
-              (selectedInspectEntityDialogTab as ComponentProps<
-                typeof InspectEntityDialog
-              >['initialTab']) || undefined
-            }
-            open={inspectDialogOpen}
-            onClose={closeInspectEntityDialog}
-            onSelect={setInspectEntityDialogTab}
-          />
-          <UnregisterEntityDialog
-            entity={entity!}
-            open={confirmationDialogOpen}
-            onClose={closeUnregisterEntityDialog}
-            onConfirm={cleanUpAfterUnregisterConfirmation}
-          />
-        </>
+    <>
+      <Header
+        title={primaryTitle}
+        customActions={
+          entity ? (
+            <>
+              <FavoriteEntity entity={entity} />
+              <EntityContextMenu
+                UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+                UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
+                contextMenuItems={contextMenuItems}
+              />
+            </>
+          ) : undefined
+        }
+        tabs={tabs}
+        activeTabId={activeTabId}
+      />
+      {entity && inspectDialogOpen && (
+        <InspectEntityDialog
+          open
+          entity={entity}
+          initialTab={
+            inspectDialogTab as ComponentProps<
+              typeof InspectEntityDialog
+            >['initialTab']
+          }
+          onClose={closeInspectDialog}
+          onSelect={selectInspectTab}
+        />
       )}
-    </Header>
+    </>
   );
 }

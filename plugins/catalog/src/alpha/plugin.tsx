@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
+import {
+  createFrontendPlugin,
+  PluginHeaderActionBlueprint,
+} from '@backstage/frontend-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import CategoryIcon from '@material-ui/icons/Category';
 
@@ -36,6 +39,18 @@ import entityIconLinks from './entityIconLinks';
 import searchResultItems from './searchResultItems';
 import contextMenuItems from './contextMenuItems';
 
+const createButtonAction = PluginHeaderActionBlueprint.make({
+  name: 'create-button',
+  params: {
+    loader: async () => {
+      const { CreateButtonAction } = await import(
+        './components/CreateButtonAction'
+      );
+      return <CreateButtonAction />;
+    },
+  },
+});
+
 /** @alpha */
 export default createFrontendPlugin({
   pluginId: 'catalog',
@@ -44,6 +59,7 @@ export default createFrontendPlugin({
   info: {
     packageJson: () => import('../../package.json'),
   },
+  titleRouteRef: rootRouteRef,
   routes: {
     catalogIndex: rootRouteRef,
     catalogEntity: entityRouteRef,
@@ -64,5 +80,6 @@ export default createFrontendPlugin({
     ...entityIconLinks,
     ...contextMenuItems,
     ...searchResultItems,
+    createButtonAction,
   ],
 });
