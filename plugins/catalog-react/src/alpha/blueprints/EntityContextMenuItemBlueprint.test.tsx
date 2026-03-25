@@ -18,9 +18,10 @@ import {
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
 import { EntityContextMenuItemBlueprint } from './EntityContextMenuItemBlueprint';
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
+import { MenuTrigger, Menu } from '@backstage/ui';
 
 jest.mock('../../hooks/useEntityContextMenu', () => ({
   useEntityContextMenu: () => ({
@@ -247,13 +248,14 @@ describe('EntityContextMenuItemBlueprint', () => {
           metadata: { name: 'test' },
         }}
       >
-        <ul>{createExtensionTester(extension).reactElement()}</ul>
+        <MenuTrigger isOpen>
+          <button>Menu</button>
+          <Menu>{createExtensionTester(extension).reactElement()}</Menu>
+        </MenuTrigger>
       </EntityProvider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Test')).toBeInTheDocument();
-    });
+    expect(await screen.findByRole('menuitem')).toHaveTextContent('Test');
   });
 
   it.each([
