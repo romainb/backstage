@@ -17,7 +17,7 @@
 import { type Entity } from '@backstage/catalog-model';
 import { useStarredEntity } from '@backstage/plugin-catalog-react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-import { ButtonIcon } from '@backstage/ui';
+import { ButtonIcon, VisuallyHidden } from '@backstage/ui';
 import { RiStarLine, RiStarFill } from '@remixicon/react';
 import { catalogTranslationRef } from '../../translation';
 
@@ -28,16 +28,23 @@ export function FavoriteEntity(props: { entity: Entity }) {
   const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
-    <ButtonIcon
-      variant="secondary"
-      icon={isStarredEntity ? <RiStarFill /> : <RiStarLine />}
-      aria-label={
-        isStarredEntity
-          ? t('favoriteEntity.removeLabel')
-          : t('favoriteEntity.addLabel')
-      }
-      aria-pressed={isStarredEntity}
-      onPress={toggleStarredEntity}
-    />
+    <>
+      <VisuallyHidden aria-live="polite">
+        {isStarredEntity
+          ? t('favoriteEntity.addedStatus')
+          : t('favoriteEntity.removedStatus')}
+      </VisuallyHidden>
+      <ButtonIcon
+        variant="secondary"
+        icon={isStarredEntity ? <RiStarFill /> : <RiStarLine />}
+        aria-label={
+          isStarredEntity
+            ? t('favoriteEntity.removeLabel')
+            : t('favoriteEntity.addLabel')
+        }
+        aria-pressed={isStarredEntity}
+        onPress={toggleStarredEntity}
+      />
+    </>
   );
 }

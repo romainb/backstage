@@ -40,7 +40,7 @@ describe('EntityContextMenu', () => {
       </TestApiProvider>,
     );
 
-    const trigger = screen.getByRole('button', { name: 'more' });
+    const trigger = screen.getByRole('button', { name: 'More actions' });
     expect(trigger).toBeInTheDocument();
 
     await userEvent.click(trigger);
@@ -67,7 +67,7 @@ describe('EntityContextMenu', () => {
       </TestApiProvider>,
     );
 
-    await userEvent.click(screen.getByRole('button', { name: 'more' }));
+    await userEvent.click(screen.getByRole('button', { name: 'More actions' }));
 
     expect(
       screen.getByRole('menuitem', { name: 'Extra Action' }),
@@ -92,7 +92,7 @@ describe('EntityContextMenu', () => {
       </TestApiProvider>,
     );
 
-    await userEvent.click(screen.getByRole('button', { name: 'more' }));
+    await userEvent.click(screen.getByRole('button', { name: 'More actions' }));
 
     expect(
       screen.getByRole('menuitem', { name: 'Only Item' }),

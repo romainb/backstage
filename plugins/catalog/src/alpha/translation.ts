@@ -107,7 +107,7 @@ export const catalogTranslationRef = createTranslationRef({
       inspectMenuTitle: 'Inspect entity',
       copyURLMenuTitle: 'Copy entity URL',
       unregisterMenuTitle: 'Unregister entity',
-      moreButtonAriaLabel: 'more',
+      moreButtonAriaLabel: 'More actions',
     },
     entityLabelsCard: {
       title: 'Labels',
@@ -179,6 +179,12 @@ export const catalogTranslationRef = createTranslationRef({
         provides: 'provides',
         dependsOn: 'depends on',
       },
+    },
+    favoriteEntity: {
+      addLabel: 'Add to favorites',
+      removeLabel: 'Remove from favorites',
+      addedStatus: 'Added to favorites',
+      removedStatus: 'Removed from favorites',
     },
   },
 });

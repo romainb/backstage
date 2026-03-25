@@ -45,6 +45,7 @@ describe('FavoriteEntity', () => {
 
     const button = screen.getByRole('button', { name: 'Add to favorites' });
     expect(button).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByText('Removed from favorites')).toBeInTheDocument();
 
     await userEvent.click(button);
 
@@ -52,6 +53,7 @@ describe('FavoriteEntity', () => {
       name: 'Remove from favorites',
     });
     expect(starredButton).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('Added to favorites')).toBeInTheDocument();
   });
 
   it('renders as starred when entity is already starred and toggles off', async () => {
@@ -68,6 +70,7 @@ describe('FavoriteEntity', () => {
       name: 'Remove from favorites',
     });
     expect(button).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('Added to favorites')).toBeInTheDocument();
 
     await userEvent.click(button);
 
@@ -75,5 +78,6 @@ describe('FavoriteEntity', () => {
       name: 'Add to favorites',
     });
     expect(unstarredButton).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByText('Removed from favorites')).toBeInTheDocument();
   });
 });

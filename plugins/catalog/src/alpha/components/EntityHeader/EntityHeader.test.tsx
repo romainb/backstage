@@ -78,7 +78,9 @@ describe('EntityHeader', () => {
     ).toBeInTheDocument();
 
     // Context menu trigger is shown
-    expect(screen.getByRole('button', { name: 'more' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'More actions' }),
+    ).toBeInTheDocument();
   });
 
   it('renders fallback title from route params when entity is not loaded and hides actions', async () => {
@@ -96,7 +98,7 @@ describe('EntityHeader', () => {
       screen.queryByRole('button', { name: 'Add to favorites' }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: 'more' }),
+      screen.queryByRole('button', { name: 'More actions' }),
     ).not.toBeInTheDocument();
   });
 
@@ -120,6 +122,12 @@ describe('EntityHeader', () => {
 
     expect(screen.getByRole('link', { name: /Overview/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /TechDocs/ })).toBeInTheDocument();
+
+    // The active tab should have aria-current="page"
+    expect(screen.getByRole('link', { name: /Overview/ })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
   });
 
   it('opens InspectEntityDialog when ?inspect search param is present', async () => {
