@@ -73,7 +73,7 @@ the component shows an error panel.
 From the repository root:
 
 ```sh
-CI=1 yarn test plugins/todo
+yarn test plugins/todo
 ```
 
 ### Writing additional tests
