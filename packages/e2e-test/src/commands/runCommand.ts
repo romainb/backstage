@@ -390,8 +390,15 @@ async function createPlugin(options: {
     await runOutput(['yarn', 'tsc'], { cwd: appDir });
 
     for (const cmd of [['lint'], ['test', '--no-watch']]) {
-      print(`Running 'yarn ${cmd.join(' ')}' in newly created plugin`);
-      await runOutput(['yarn', ...cmd], { cwd: pluginDir });
+      try {
+        print(`Running 'yarn ${cmd.join(' ')}' in newly created plugin`);
+        await runOutput(['yarn', ...cmd], { cwd: pluginDir });
+      } catch (error) {
+        if ('stderr' in error) {
+          print(`Error output from plugin command:\n${error.stderr}`);
+        }
+        throw error;
+      }
     }
   } finally {
     child.kill();
