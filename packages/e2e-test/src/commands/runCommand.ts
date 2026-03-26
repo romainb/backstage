@@ -395,7 +395,7 @@ async function createPlugin(options: {
         await runOutput(['yarn', ...cmd], { cwd: pluginDir });
       } catch (error) {
         if ('stderr' in error) {
-          print(`Error output from plugin command:\n${error.stderr}`);
+          process.stderr.write(error.stderr);
         }
         throw error;
       }
