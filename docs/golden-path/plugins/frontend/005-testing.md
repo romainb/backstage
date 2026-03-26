@@ -42,10 +42,12 @@ registerMswTestHooks(server);
 
 it('renders todos from the backend', async () => {
   server.use(
-    http.get('*/api/todo/todos', () =>
-      HttpResponse.json({
-        items: [{ id: '1', title: 'Mocked task', ... }],
-      }),
+    rest.get('*/api/todo/todos', (req, res, ctx) =>
+      res(
+        ctx.json({
+          items: [{ id: '1', title: 'Mocked task' /* ... */ }],
+        }),
+      ),
     ),
   );
 

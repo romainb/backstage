@@ -13,7 +13,7 @@ describe('TodoPage', () => {
 
   it('renders todos from the backend', async () => {
     server.use(
-      rest.get('*/api/todo/todos', (_, res, ctx) =>
+      rest.get('*/api/{{pluginId}}/todos', (_, res, ctx) =>
         res(
           ctx.json({
             items: [
@@ -31,7 +31,7 @@ describe('TodoPage', () => {
 
   it('renders an error when the backend fails', async () => {
     server.use(
-      rest.get('*/api/todo/todos', (_, res, ctx) =>
+      rest.get('*/api/{{pluginId}}/todos', (_, res, ctx) =>
         res(ctx.status(500), ctx.json({ message: 'Internal Server Error' })),
       ),
     );
