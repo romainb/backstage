@@ -396,6 +396,7 @@ async function createPlugin(options: {
       } catch (error) {
         if ('stderr' in error) {
           process.stderr.write(error.stderr);
+          process.stderr.write('\n');
         }
         throw error;
       }
