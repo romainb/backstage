@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { decodeJwt } from 'jose';
 import { Strategy } from 'passport';
 import {
   PassportDoneCallback,
@@ -114,7 +115,48 @@ export class PassportOAuthAuthenticatorHelper {
       input.refreshToken,
       input.scope,
     );
-    const fullProfile = await this.fetchProfile(result.accessToken);
+
+    let fullProfile: PassportProfile;
+
+    const idToken = result.params.id_token;
+    if (idToken) {
+      try {
+        const decoded = decodeJwt(idToken) as {
+          sub?: string;
+          email?: string;
+          name?: string;
+          nickname?: string;
+          picture?: string;
+        };
+
+        if (decoded.email || decoded.name) {
+          const displayName =
+            decoded.name ??
+            decoded.nickname ??
+            decoded.email ??
+            decoded.sub ??
+            '';
+
+          fullProfile = {
+            provider: 'oauth2',
+            id: decoded.sub ?? '',
+            displayName,
+            ...(decoded.nickname ? { username: decoded.nickname } : {}),
+            ...(decoded.email ? { emails: [{ value: decoded.email }] } : {}),
+            ...(decoded.picture
+              ? { photos: [{ value: decoded.picture }] }
+              : {}),
+          };
+        } else {
+          fullProfile = await this.fetchProfile(result.accessToken);
+        }
+      } catch {
+        fullProfile = await this.fetchProfile(result.accessToken);
+      }
+    } else {
+      fullProfile = await this.fetchProfile(result.accessToken);
+    }
+
     return {
       fullProfile,
       session: {
