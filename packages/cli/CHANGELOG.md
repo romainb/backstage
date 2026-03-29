@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.36.1-next.1
+
+### Patch Changes
+
+- a7a14b7: Added `DOM.AsyncIterable` to the default `lib` in the shared TypeScript configuration, enabling standard async iteration support for DOM APIs such as `FileSystemDirectoryHandle`. This aligns behavior with [TypeScript 6.0](https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/#the-dom-lib-now-contains-domiterable-and-domasynciterable), where this lib is included in `DOM` by default.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.2.3-next.0
+
 ## 0.36.1-next.0
 
 ### Patch Changes

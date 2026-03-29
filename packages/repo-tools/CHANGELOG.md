@@ -1,5 +1,13 @@
 # @backstage/repo-tools
 
+## 0.17.1-next.1
+
+### Patch Changes
+
+- 8e9679b: Parallelized CLI report generation, reducing wall-clock time by ~4x.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.9.0-next.1
+
 ## 0.17.1-next.0
 
 ### Patch Changes
